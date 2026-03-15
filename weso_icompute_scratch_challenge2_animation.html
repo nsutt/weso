@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCompute — Challenge 2: Animation &amp; Movement</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, monospace;
+    --color-bg: #ffffff;
+    --color-bg2: #f5f5f3;
+    --color-bg3: #ebebea;
+    --color-text: #1a1a18;
+    --color-text2: #5a5a56;
+    --color-text3: #888780;
+    --color-border: rgba(0,0,0,0.12);
+    --color-border2: rgba(0,0,0,0.2);
+    --color-info-bg: #e6f1fb;
+    --color-info-text: #185fa5;
+    --color-info-border: #b5d4f4;
+    --color-success-bg: #eaf3de;
+    --color-success-text: #3b6d11;
+    --color-warning-bg: #faeeda;
+    --color-warning-text: #854f0b;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #1e1e1c;
+      --color-bg2: #2a2a28;
+      --color-bg3: #333331;
+      --color-text: #e8e6de;
+      --color-text2: #9c9a92;
+      --color-text3: #6e6c66;
+      --color-border: rgba(255,255,255,0.1);
+      --color-border2: rgba(255,255,255,0.2);
+      --color-info-bg: #042c53;
+      --color-info-text: #85b7eb;
+      --color-info-border: #0c447c;
+      --color-success-bg: #173404;
+      --color-success-text: #97c459;
+      --color-warning-bg: #412402;
+      --color-warning-text: #ef9f27;
+    }
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    margin: 0;
+    padding: 24px 20px;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  h2 { font-size: 20px; font-weight: 500; margin: 0 0 6px; color: var(--color-text); }
+  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 8px; color: var(--color-text); }
+  p, li { font-size: 14px; color: var(--color-text2); line-height: 1.7; margin: 0 0 6px; }
+  ul, ol { padding-left: 20px; margin: 0 0 12px; }
+  strong { font-weight: 500; color: var(--color-text); }
+  em { font-style: italic; }
+  .card { background: var(--color-bg); border: 0.5px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px 20px; margin: 0 0 16px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 10px; }
+  .b-blue { background: var(--color-info-bg); color: var(--color-info-text); }
+  .b-amber { background: var(--color-warning-bg); color: var(--color-warning-text); }
+  .b-green { background: var(--color-success-bg); color: var(--color-success-text); }
+  .b-gray { background: var(--color-bg2); color: var(--color-text2); }
+  .tab-bar { display: flex; gap: 6px; margin: 0 0 16px; border-bottom: 0.5px solid var(--color-border); }
+  .tab { font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer; border-radius: var(--radius-md) var(--radius-md) 0 0; color: var(--color-text2); border: 0.5px solid transparent; border-bottom: none; transition: background 0.12s; }
+  .tab:hover { background: var(--color-bg2); }
+  .tab.active { color: var(--color-text); background: var(--color-bg); border-color: var(--color-border); margin-bottom: -1px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .rubric-row { display: grid; grid-template-columns: 2fr 1fr 3fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border); font-size: 13px; color: var(--color-text2); }
+  .rubric-row:last-child { border-bottom: none; }
+  .rubric-head { font-weight: 500; color: var(--color-text2); font-size: 12px; padding: 0 0 6px; border-bottom: 0.5px solid var(--color-border2); }
+  .rubric-row .pts { font-weight: 500; color: var(--color-text); }
+  .block { display: inline-block; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin: 2px; font-family: var(--font-mono); }
+  .bl-motion { background: #4d97ff; color: #fff; }
+  .bl-control { background: #ffab19; color: #fff; }
+  .bl-looks { background: #9966ff; color: #fff; }
+  .bl-sensing { background: #5cb1d6; color: #fff; }
+  .bl-operators { background: #59c059; color: #fff; }
+  .bl-events { background: #ffbf00; color: #fff; }
+  .hint-box { background: var(--color-bg2); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--color-text2); margin: 8px 0; line-height: 1.6; }
+  .checklist label { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text2); padding: 6px 0; cursor: pointer; border-bottom: 0.5px solid var(--color-border); line-height: 1.5; }
+  .checklist label:last-child { border-bottom: none; }
+  .checklist input[type=checkbox] { margin-top: 3px; flex-shrink: 0; }
+  .checklist label.checked-item { color: var(--color-success-text); text-decoration: line-through; opacity: 0.7; }
+  .score-bar { height: 8px; border-radius: 4px; background: var(--color-bg3); margin: 6px 0; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 4px; background: var(--color-info-border); transition: width 0.3s; }
+  #score-display { font-size: 22px; font-weight: 500; color: var(--color-text); }
+  .difficulty { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .diff-btn { font-size: 12px; padding: 5px 14px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); cursor: pointer; background: transparent; color: var(--color-text2); font-family: var(--font-sans); transition: background 0.12s; }
+  .diff-btn:hover { background: var(--color-bg2); }
+  .diff-btn.active { background: var(--color-info-bg); color: var(--color-info-text); border-color: var(--color-info-border); }
+  .step-grid { display: grid; grid-template-columns: 28px 1fr; gap: 6px 12px; align-items: start; margin: 10px 0; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--color-info-bg); color: var(--color-info-text); font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; margin-top: 2px; flex-shrink: 0; }
+  .step-text { font-size: 14px; color: var(--color-text2); line-height: 1.6; padding-top: 4px; }
+  .corner-diagram { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; width: 130px; margin: 12px auto; }
+  .corner-box { border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); padding: 6px 8px; font-size: 11px; text-align: center; color: var(--color-text2); background: var(--color-bg2); }
+  .corner-box.active-corner { background: var(--color-info-bg); color: var(--color-info-text); border-color: var(--color-info-border); }
+  .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .header-row .meta { font-size: 13px; color: var(--color-text2); margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="header-row">
+  <div>
+    <h2>iCompute — Challenge 2: Animation &amp; movement</h2>
+    <p class="meta">WESO 2026 · Section C · 30 points · Scratch 3.29 offline editor</p>
+  </div>
+  <span class="badge b-blue" style="margin-left:auto">Grades 4–5</span>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('challenge', event)">Challenge</div>
+  <div class="tab" onclick="switchTab('hints', event)">Hints &amp; blocks</div>
+  <div class="tab" onclick="switchTab('rubric', event)">Scoring rubric</div>
+  <div class="tab" onclick="switchTab('checklist', event)">Self-check</div>
+</div>
+
+<!-- CHALLENGE TAB -->
+<div id="tab-challenge" class="panel active">
+  <div class="difficulty">
+    <span style="font-size:13px;color:var(--color-text2);">Difficulty:</span>
+    <button class="diff-btn" onclick="setDiff('starter', event)">Starter</button>
+    <button class="diff-btn active" onclick="setDiff('standard', event)">Standard</button>
+    <button class="diff-btn" onclick="setDiff('challenge', event)">Challenge +</button>
+  </div>
+
+  <!-- STARTER -->
+  <div id="diff-starter" class="card" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span class="badge b-gray">Starter</span>
+      <span style="font-size:13px;color:var(--color-text2);">Good for first-time Scratch users</span>
+    </div>
+    <h3 style="margin-top:0">Corner tour</h3>
+    <p>Create a program where a sprite visits all four corners of the screen in order, pauses at each one, then returns to the center and announces it's done. This is very close to a real WESO sample question!</p>
+    <div class="corner-diagram">
+      <div class="corner-box active-corner">Top-left<br>start here</div>
+      <div class="corner-box">Top-right</div>
+      <div class="corner-box">Bottom-left</div>
+      <div class="corner-box">Bottom-right</div>
+    </div>
+    <div class="step-grid">
+      <div class="step-num">1</div><div class="step-text">When the green flag is clicked, move the sprite to the <strong>top-left corner</strong> to start.</div>
+      <div class="step-num">2</div><div class="step-text">Visit each corner in order (top-left → top-right → bottom-right → bottom-left), waiting <strong>2 seconds</strong> at each one.</div>
+      <div class="step-num">3</div><div class="step-text">After all four corners, glide to the <strong>center of the screen</strong> (x:0, y:0).</div>
+      <div class="step-num">4</div><div class="step-text">The sprite should say <em>"I visited all four corners!"</em> for 3 seconds.</div>
+    </div>
+    <div class="hint-box"><strong>Scratch screen coordinates:</strong> Top-left is about (−200, 150). Top-right is (200, 150). Bottom-right is (200, −150). Bottom-left is (−200, −150). Center is (0, 0).</div>
+  </div>
+
+  <!-- STANDARD -->
+  <div id="diff-standard" class="card" style="display:block">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span class="badge b-blue">Standard</span>
+      <span style="font-size:13px;color:var(--color-text2);">Matches WESO competition level</span>
+    </div>
+    <h3 style="margin-top:0">The bouncing patrol</h3>
+    <p>Create a program where a sprite patrols the screen, bouncing off the edges, while a second sprite chases it. When the chaser catches the patrol sprite, something happens!</p>
+    <div class="step-grid">
+      <div class="step-num">1</div><div class="step-text">Choose two sprites. The <strong>patrol sprite</strong> moves forward 5 steps and bounces off edges in a <strong>forever</strong> loop. It should also slowly rotate as it moves.</div>
+      <div class="step-num">2</div><div class="step-text">The <strong>chaser sprite</strong> always points toward the patrol sprite and moves forward 3 steps in a <strong>forever</strong> loop — it's a little slower so the patrol can escape!</div>
+      <div class="step-num">3</div><div class="step-text">When the chaser is <strong>touching</strong> the patrol sprite, it should stop both sprites, play a sound, and say <em>"Got you!"</em>.</div>
+      <div class="step-num">4</div><div class="step-text">Add a backdrop and a variable on screen showing how many seconds have passed since the program started.</div>
+    </div>
+    <div class="hint-box"><strong>Key idea:</strong> The two sprites each need their own set of blocks — both starting with <span class="block bl-events" style="font-size:11px;padding:2px 7px">when 🏳 clicked</span>. Use <span class="block bl-sensing" style="font-size:11px;padding:2px 7px">touching [sprite]?</span> inside an <span class="block bl-control" style="font-size:11px;padding:2px 7px">if</span> block to detect the catch.</div>
+  </div>
+
+  <!-- CHALLENGE+ -->
+  <div id="diff-challenge" class="card" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span class="badge b-amber">Challenge +</span>
+      <span style="font-size:13px;color:var(--color-text2);">Above &amp; beyond — targets creativity/efficiency points</span>
+    </div>
+    <h3 style="margin-top:0">Avoid the obstacles</h3>
+    <p>Create a simple game where the player controls a sprite using the arrow keys to avoid randomly-moving obstacles. The game ends — and shows the player's score — when the player sprite touches an obstacle.</p>
+    <div class="step-grid">
+      <div class="step-num">1</div><div class="step-text">The <strong>player sprite</strong> moves using the arrow keys (up, down, left, right), each key moving the sprite 10 steps in that direction.</div>
+      <div class="step-num">2</div><div class="step-text">Create <strong>two obstacle sprites</strong>. Each one starts at a random position, moves in a random direction, and bounces off edges in a forever loop.</div>
+      <div class="step-num">3</div><div class="step-text">Use a <strong>score variable</strong> that increases by 1 every second the player survives. Show it on screen.</div>
+      <div class="step-num">4</div><div class="step-text">When the player touches either obstacle, stop all sprites, play a sound, and have the player sprite say <em>"Game over! Score: [score]"</em> using <span class="block bl-operators" style="font-size:11px;padding:2px 7px">join</span>.</div>
+      <div class="step-num">5</div><div class="step-text">Add a backdrop and make the obstacles change color continuously while they move — this earns creativity points.</div>
+    </div>
+    <div class="hint-box"><strong>Efficiency tip:</strong> Use a <span class="block bl-control" style="font-size:11px;padding:2px 6px">repeat until &lt;touching player?&gt;</span> loop for each obstacle instead of a forever + if — it's cleaner and judges notice that kind of thing for the tiebreaker.</div>
+  </div>
+</div>
+
+<!-- HINTS TAB -->
+<div id="tab-hints" class="panel">
+  <h3 style="margin-top:0">Key motion &amp; animation blocks</h3>
+  <p>These are the blocks you'll need most for animation and movement challenges.</p>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Motion — moving around the stage</p>
+    <span class="block bl-motion">move (10) steps</span>
+    <span class="block bl-motion">glide (1) secs to x:( ) y:( )</span>
+    <span class="block bl-motion">go to x:( ) y:( )</span>
+    <span class="block bl-motion">point in direction ( )</span>
+    <span class="block bl-motion">point towards [sprite]</span>
+    <span class="block bl-motion">if on edge, bounce</span>
+    <span class="block bl-motion">turn ↻ (15) degrees</span>
+    <span class="block bl-motion">set rotation style [left-right]</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Looks — costume &amp; visual effects</p>
+    <span class="block bl-looks">next costume</span>
+    <span class="block bl-looks">change [color] effect by (25)</span>
+    <span class="block bl-looks">say [ ] for (2) secs</span>
+    <span class="block bl-looks">show</span>
+    <span class="block bl-looks">hide</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Control — loops and timing</p>
+    <span class="block bl-control">forever</span>
+    <span class="block bl-control">repeat until &lt; &gt;</span>
+    <span class="block bl-control">wait (1) secs</span>
+    <span class="block bl-control">stop [all]</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Sensing — detecting collisions &amp; keys</p>
+    <span class="block bl-sensing">touching [sprite]?</span>
+    <span class="block bl-sensing">touching [edge]?</span>
+    <span class="block bl-sensing">key [space] pressed?</span>
+    <span class="block bl-sensing">timer</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Operators — useful for movement logic</p>
+    <span class="block bl-operators">pick random (1) to (10)</span>
+    <span class="block bl-operators">join [ ] [ ]</span>
+  </div>
+  <div class="hint-box"><strong>Scratch coordinate system:</strong> The stage is 480 wide × 360 tall. The center is (0, 0). Left edge is x = −240, right edge is x = 240. Top edge is y = 180, bottom edge is y = −180.</div>
+  <div class="hint-box" style="margin-top:8px;"><strong>Two sprites, two scripts:</strong> Each sprite has its own script area. Click a sprite in the sprite list, then add blocks for that sprite only. When green flag is clicked, all sprites start their own scripts at the same time.</div>
+</div>
+
+<!-- RUBRIC TAB -->
+<div id="tab-rubric" class="panel">
+  <p>Same official WESO 2026 Section C breakdown — applied to an animation challenge.</p>
+  <div class="card" style="padding:14px 16px;">
+    <div class="rubric-row rubric-head">
+      <span>Category</span><span>Points</span><span>What judges look for in animation tasks</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Correct algorithm</span>
+      <span class="pts">10 pts</span>
+      <span>Right constructs used — forever loops for continuous motion, if/touching for collision detection, point towards for chasing. Logic flows correctly.</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Working program</span>
+      <span class="pts">10 pts</span>
+      <span>Sprites actually move when green flag is clicked. Collisions trigger correctly. No frozen or runaway sprites.</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Precision</span>
+      <span class="pts">5 pts</span>
+      <span>Correct coordinates used, timing is right (wait blocks match the spec), messages spelled correctly, edge-bounce works smoothly.</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Creativity &amp; efficiency</span>
+      <span class="pts">5 pts</span>
+      <span><strong>Tiebreaker.</strong> Costume changes during movement, color effects, backdrops, sounds on collision, clean loop structure instead of repeated code.</span>
+    </div>
+    <div style="padding-top:12px;font-size:13px;color:var(--color-text2)">Total Section C: <strong style="color:var(--color-text)">30 points</strong> &nbsp;·&nbsp; Full test total: <strong style="color:var(--color-text)">50 points</strong></div>
+  </div>
+  <div class="hint-box"><strong>Coach tip:</strong> For animation tasks, "working program" points are easy to lose if sprites get stuck at edges. Make sure students always pair <span class="block bl-motion" style="font-size:11px;padding:2px 6px">move ( ) steps</span> with <span class="block bl-motion" style="font-size:11px;padding:2px 6px">if on edge, bounce</span> inside their forever loop.</div>
+</div>
+
+<!-- SELF-CHECK TAB -->
+<div id="tab-checklist" class="panel">
+  <p>Check off each item your animation program accomplishes.</p>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+    <span id="score-display">0 / 30</span>
+    <div style="flex:1">
+      <div class="score-bar"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
+    </div>
+    <span class="badge b-gray" id="score-label">Keep going</span>
+  </div>
+  <div class="card" style="padding:12px 16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Algorithm (up to 10 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="3" onchange="recalc()"> Uses a forever loop (or repeat until) for continuous sprite movement</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> Uses if/touching or point towards for sprite interaction logic</label>
+      <label><input type="checkbox" value="4" onchange="recalc()"> The overall logic is correct — sprites behave as the task describes</label>
+    </div>
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin:12px 0 8px;">Working program (up to 10 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="4" onchange="recalc()"> Sprites move correctly when green flag is clicked — no freezing</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> Edge-bouncing works smoothly (sprite doesn't get stuck)</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> Collision or end condition triggers correctly (stop, message, sound)</label>
+    </div>
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin:12px 0 8px;">Precision (up to 5 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="3" onchange="recalc()"> Correct coordinates or timing used as specified (corners, wait times, speeds)</label>
+      <label><input type="checkbox" value="2" onchange="recalc()"> Messages and on-screen text are spelled correctly and match the task</label>
+    </div>
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin:12px 0 8px;">Creativity &amp; efficiency (up to 5 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="2" onchange="recalc()"> Costume changes or color effects used during movement</label>
+      <label><input type="checkbox" value="1" onchange="recalc()"> Sound plays at a meaningful moment (collision, arrival, game over)</label>
+      <label><input type="checkbox" value="2" onchange="recalc()"> Code is efficient — no unnecessary repeated blocks, clean loop structure</label>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(id, e) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  e.target.classList.add('active');
+}
+function setDiff(d, e) {
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('diff-starter').style.display = d === 'starter' ? 'block' : 'none';
+  document.getElementById('diff-standard').style.display = d === 'standard' ? 'block' : 'none';
+  document.getElementById('diff-challenge').style.display = d === 'challenge' ? 'block' : 'none';
+}
+function recalc() {
+  let total = 0;
+  document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb => {
+    const label = cb.closest('label');
+    if (cb.checked) { total += parseInt(cb.value); label.classList.add('checked-item'); }
+    else { label.classList.remove('checked-item'); }
+  });
+  total = Math.min(total, 30);
+  document.getElementById('score-display').textContent = total + ' / 30';
+  document.getElementById('score-fill').style.width = (total / 30 * 100) + '%';
+  const lbl = document.getElementById('score-label');
+  if (total >= 28) { lbl.textContent = 'Competition ready!'; lbl.className = 'badge b-green'; }
+  else if (total >= 18) { lbl.textContent = 'Getting there'; lbl.className = 'badge b-blue'; }
+  else { lbl.textContent = 'Keep going'; lbl.className = 'badge b-gray'; }
+}
+</script>
+</body>
+</html>

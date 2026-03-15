@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCompute — Flowcharts: Reading &amp; Building</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --color-bg: #ffffff; --color-bg2: #f5f5f3; --color-bg3: #ebebea;
+    --color-text: #1a1a18; --color-text2: #5a5a56; --color-text3: #888780;
+    --color-border: rgba(0,0,0,0.12); --color-border2: rgba(0,0,0,0.22);
+    --color-info-bg: #e6f1fb; --color-info-text: #185fa5; --color-info-border: #b5d4f4;
+    --color-success-bg: #eaf3de; --color-success-text: #3b6d11; --color-success-border: #c0dd97;
+    --color-warning-bg: #faeeda; --color-warning-text: #854f0b; --color-warning-border: #fac775;
+    --color-danger-bg: #fcebeb; --color-danger-text: #a32d2d; --color-danger-border: #f7c1c1;
+    --radius-md: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #1e1e1c; --color-bg2: #2a2a28; --color-bg3: #333331;
+      --color-text: #e8e6de; --color-text2: #9c9a92; --color-text3: #6e6c66;
+      --color-border: rgba(255,255,255,0.1); --color-border2: rgba(255,255,255,0.2);
+      --color-info-bg: #042c53; --color-info-text: #85b7eb; --color-info-border: #0c447c;
+      --color-success-bg: #173404; --color-success-text: #97c459; --color-success-border: #27500a;
+      --color-warning-bg: #412402; --color-warning-text: #ef9f27; --color-warning-border: #633806;
+      --color-danger-bg: #501313; --color-danger-text: #f09595; --color-danger-border: #791f1f;
+    }
+  }
+  body { font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text); margin: 0 auto; padding: 24px 20px; max-width: 780px; }
+  h2 { font-size: 20px; font-weight: 500; margin: 0 0 4px; }
+  h3 { font-size: 15px; font-weight: 500; margin: 1.2rem 0 8px; }
+  p, li { font-size: 14px; color: var(--color-text2); line-height: 1.7; margin: 0 0 6px; }
+  ul { padding-left: 18px; margin: 0 0 10px; }
+  strong { font-weight: 500; color: var(--color-text); }
+  .card { background: var(--color-bg); border: 0.5px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px 18px; margin: 0 0 14px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 10px; }
+  .b-blue  { background: var(--color-info-bg);    color: var(--color-info-text); }
+  .b-green { background: var(--color-success-bg); color: var(--color-success-text); }
+  .b-amber { background: var(--color-warning-bg); color: var(--color-warning-text); }
+  .b-gray  { background: var(--color-bg2);        color: var(--color-text2); }
+  .tab-bar { display: flex; gap: 6px; margin: 0 0 16px; border-bottom: 0.5px solid var(--color-border); }
+  .tab { font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer; border-radius: var(--radius-md) var(--radius-md) 0 0; color: var(--color-text2); border: 0.5px solid transparent; border-bottom: none; transition: background .12s; }
+  .tab:hover { background: var(--color-bg2); }
+  .tab.active { color: var(--color-text); background: var(--color-bg); border-color: var(--color-border); margin-bottom: -1px; }
+  .panel { display: none; } .panel.active { display: block; }
+  .hint-box { background: var(--color-bg2); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--color-text2); margin: 6px 0; line-height: 1.6; }
+  .q-block { border: 0.5px solid var(--color-border); border-radius: var(--radius-md); padding: 12px 14px; margin: 0 0 10px; }
+  .q-block p { margin: 0 0 8px; color: var(--color-text); font-weight: 500; font-size: 14px; }
+  .choices { display: flex; flex-direction: column; gap: 6px; }
+  .choice-btn { font-family: var(--font-sans); font-size: 13px; text-align: left; padding: 7px 12px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); background: transparent; color: var(--color-text); cursor: pointer; transition: background .12s; }
+  .choice-btn:hover:not(:disabled) { background: var(--color-bg2); }
+  .choice-btn.correct { background: var(--color-success-bg); border-color: var(--color-success-border); color: var(--color-success-text); }
+  .choice-btn.wrong   { background: var(--color-danger-bg);  border-color: var(--color-danger-border);  color: var(--color-danger-text); }
+  .feedback { font-size: 12px; margin-top: 6px; min-height: 16px; color: var(--color-text2); }
+  .section-lbl { font-size: 12px; font-weight: 500; color: var(--color-text2); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+  .drop-zone { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 8px; border: 0.5px dashed var(--color-border2); border-radius: var(--radius-md); background: var(--color-bg2); }
+  .drop-zone.over { border-color: var(--color-info-border); background: var(--color-info-bg); }
+  .drag-chip { font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: var(--radius-md); cursor: grab; user-select: none; border: 0.5px solid var(--color-border2); background: var(--color-bg); color: var(--color-text); transition: opacity .12s; }
+  .drag-chip:active { cursor: grabbing; opacity: .7; }
+  .drag-chip.placed { opacity: .35; cursor: default; }
+  .chip-start, .chip-end { border-color: #1D9E75; color: #085041; background: #E1F5EE; }
+  .chip-action   { border-color: #185FA5; color: #0C447C; background: #E6F1FB; }
+  .chip-decision { border-color: #BA7517; color: #633806; background: #FAEEDA; }
+  @media (prefers-color-scheme: dark) {
+    .chip-start, .chip-end { background: #04342C; color: #9FE1CB; border-color: #085041; }
+    .chip-action   { background: #042C53; color: #85B7EB; border-color: #0C447C; }
+    .chip-decision { background: #412402; color: #FAC775; border-color: #633806; }
+  }
+  .order-slot { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--color-border); font-size: 13px; color: var(--color-text2); }
+  .order-slot:last-child { border-bottom: none; }
+  .slot-num { width: 22px; height: 22px; border-radius: 50%; background: var(--color-bg2); color: var(--color-text2); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .check-btn { font-family: var(--font-sans); font-size: 13px; padding: 6px 18px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); background: transparent; color: var(--color-text); cursor: pointer; transition: background .12s; margin-top: 10px; }
+  .check-btn:hover { background: var(--color-bg2); }
+  .result-msg { font-size: 13px; margin-top: 8px; min-height: 18px; color: var(--color-text2); }
+  .score-bar { height: 8px; border-radius: 4px; background: var(--color-bg3); margin: 6px 0; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 4px; background: var(--color-info-border); transition: width .3s; }
+  .progress-row { display: flex; align-items: center; gap: 14px; margin: 14px 0 0; }
+  select { font-family: var(--font-sans); font-size: 12px; padding: 4px 8px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); background: var(--color-bg); color: var(--color-text); cursor: pointer; }
+  .shape-tip-box { display: none; margin-top: 8px; padding: 10px 12px; background: var(--color-bg2); border-radius: var(--radius-md); font-size: 13px; color: var(--color-text2); }
+  .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<div class="header-row">
+  <div>
+    <h2>Flowcharts — reading &amp; building</h2>
+    <p style="font-size:13px;margin:0">iCompute WESO prep · Section B &amp; C · everyday life scenarios</p>
+  </div>
+  <span class="badge b-blue" style="margin-left:auto">Grades 4–5</span>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('read',event)">Part 1 — read</div>
+  <div class="tab" onclick="switchTab('build',event)">Part 2 — build</div>
+  <div class="tab" onclick="switchTab('review',event)">Review</div>
+</div>
+
+<!-- PART 1 -->
+<div id="tab-read" class="panel active">
+  <p style="margin-bottom:14px">Study the flowchart below, then answer the questions. Click any shape to see what type it is.</p>
+  <div class="card" style="padding:12px 14px">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px">Flowchart — making toast</p>
+    <svg width="100%" viewBox="0 0 680 580">
+      <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <g style="cursor:pointer" onclick="showShapeTip('start')">
+        <ellipse cx="340" cy="38" rx="66" ry="22" fill="none" stroke="currentColor" stroke-width="0.5" style="color:var(--color-border2)"/>
+        <text x="340" y="38" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--color-text)" font-family="var(--font-sans)">Start</text>
+      </g>
+      <line x1="340" y1="60" x2="340" y2="85" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <g style="cursor:pointer" onclick="showShapeTip('action')">
+        <rect x="220" y="85" width="240" height="44" rx="6" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="340" y="107" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--color-text)" font-family="var(--font-sans)">Put bread in toaster</text>
+      </g>
+      <line x1="340" y1="129" x2="340" y2="154" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <g style="cursor:pointer" onclick="showShapeTip('action')">
+        <rect x="220" y="154" width="240" height="44" rx="6" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="340" y="176" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--color-text)" font-family="var(--font-sans)">Press lever down</text>
+      </g>
+      <line x1="340" y1="198" x2="340" y2="223" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <g style="cursor:pointer" onclick="showShapeTip('decision')">
+        <polygon points="340,223 430,262 340,301 250,262" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="340" y="262" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--color-text)" font-family="var(--font-sans)">Toast done?</text>
+      </g>
+      <line x1="250" y1="262" x2="160" y2="262" stroke="var(--color-border2)" stroke-width="1"/>
+      <text x="202" y="254" text-anchor="middle" font-size="11" fill="var(--color-text2)" font-family="var(--font-sans)">No</text>
+      <line x1="160" y1="262" x2="160" y2="176" stroke="var(--color-border2)" stroke-width="1"/>
+      <line x1="160" y1="176" x2="220" y2="176" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <line x1="340" y1="301" x2="340" y2="326" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <text x="352" y="317" font-size="11" fill="var(--color-text2)" font-family="var(--font-sans)">Yes</text>
+      <g style="cursor:pointer" onclick="showShapeTip('action')">
+        <rect x="220" y="326" width="240" height="44" rx="6" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="340" y="348" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--color-text)" font-family="var(--font-sans)">Remove toast from toaster</text>
+      </g>
+      <line x1="340" y1="370" x2="340" y2="395" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <g style="cursor:pointer" onclick="showShapeTip('decision')">
+        <polygon points="340,395 430,434 340,473 250,434" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="340" y="434" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--color-text)" font-family="var(--font-sans)">Want butter?</text>
+      </g>
+      <line x1="430" y1="434" x2="530" y2="434" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <text x="478" y="426" text-anchor="middle" font-size="11" fill="var(--color-text2)" font-family="var(--font-sans)">Yes</text>
+      <g style="cursor:pointer" onclick="showShapeTip('action')">
+        <rect x="530" y="412" width="120" height="44" rx="6" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="590" y="434" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--color-text)" font-family="var(--font-sans)">Spread butter</text>
+      </g>
+      <line x1="590" y1="456" x2="590" y2="510" stroke="var(--color-border2)" stroke-width="1"/>
+      <line x1="590" y1="510" x2="400" y2="510" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <line x1="340" y1="473" x2="340" y2="496" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+      <text x="352" y="488" font-size="11" fill="var(--color-text2)" font-family="var(--font-sans)">No</text>
+      <g style="cursor:pointer" onclick="showShapeTip('end')">
+        <ellipse cx="340" cy="530" rx="66" ry="22" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="340" y="530" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="var(--color-text)" font-family="var(--font-sans)">End</text>
+      </g>
+      <line x1="340" y1="496" x2="340" y2="508" stroke="var(--color-border2)" stroke-width="1" marker-end="url(#arr)"/>
+    </svg>
+    <div id="shape-tip" class="shape-tip-box"></div>
+  </div>
+
+  <div class="section-lbl">Questions — trace the flowchart</div>
+  <div id="q-read-container"></div>
+  <div class="progress-row">
+    <span id="read-score-display" style="font-size:20px;font-weight:500">0 / 5</span>
+    <div style="flex:1"><div class="score-bar"><div class="score-fill" id="read-score-fill" style="width:0%"></div></div></div>
+    <span class="badge b-gray" id="read-score-label">Answer the questions</span>
+  </div>
+</div>
+
+<!-- PART 2 -->
+<div id="tab-build" class="panel">
+  <p style="margin-bottom:6px">Now it's your turn. Sort, label, and fix flowcharts.</p>
+
+  <div class="section-lbl">Exercise 1 — getting dressed for school</div>
+  <div class="card">
+    <p style="font-size:13px;color:var(--color-text2);margin-bottom:12px">Drag the steps into the correct order for the flowchart.</p>
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:6px">Step bank — drag these into order below</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px" id="chip-bank-1">
+      <div class="drag-chip chip-action"   draggable="true" data-step="Put on shoes"         ondragstart="dragStart(event)">Put on shoes</div>
+      <div class="drag-chip chip-start"    draggable="true" data-step="Start"                ondragstart="dragStart(event)">Start</div>
+      <div class="drag-chip chip-decision" draggable="true" data-step="Is it cold outside?"  ondragstart="dragStart(event)">Is it cold outside?</div>
+      <div class="drag-chip chip-action"   draggable="true" data-step="Put on coat"           ondragstart="dragStart(event)">Put on coat</div>
+      <div class="drag-chip chip-end"      draggable="true" data-step="End"                   ondragstart="dragStart(event)">End</div>
+      <div class="drag-chip chip-action"   draggable="true" data-step="Get dressed"           ondragstart="dragStart(event)">Get dressed</div>
+    </div>
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:6px">Your flowchart order (drop here — left to right = top to bottom)</p>
+    <div class="drop-zone" id="drop-1" ondragover="dragOver(event)" ondrop="dropChip(event,'drop-1')" ondragleave="dragLeave(event)">
+      <p style="font-size:12px;color:var(--color-text3);margin:4px 0;align-self:center">Drop steps here</p>
+    </div>
+    <button class="check-btn" onclick="checkOrder()">Check order</button>
+    <div class="result-msg" id="order-result-1"></div>
+  </div>
+
+  <div class="section-lbl">Exercise 2 — label each step</div>
+  <div class="card">
+    <p style="font-size:13px;color:var(--color-text2);margin-bottom:12px">For each step in the "making a sandwich" flowchart, choose the correct shape type.</p>
+    <div id="label-exercise"></div>
+    <button class="check-btn" onclick="checkLabels()">Check labels</button>
+    <div class="result-msg" id="label-result"></div>
+  </div>
+
+  <div class="section-lbl">Exercise 3 — find the mistakes</div>
+  <div class="card">
+    <p style="font-size:13px;color:var(--color-text2);margin-bottom:12px">This flowchart for "crossing the road" has <strong>3 mistakes</strong>. Click to select the ones you find.</p>
+    <div id="buggy-fc"></div>
+    <button class="check-btn" onclick="checkBugs()">Check mistakes</button>
+    <div class="result-msg" id="bug-result"></div>
+  </div>
+</div>
+
+<!-- REVIEW -->
+<div id="tab-review" class="panel">
+  <h3 style="margin-top:0">Quick reference — the three shapes</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px">
+    <div class="card" style="text-align:center;padding:14px">
+      <svg width="80" height="36" viewBox="0 0 80 36" style="display:block;margin:0 auto 8px">
+        <ellipse cx="40" cy="18" rx="36" ry="14" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="40" y="18" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text)" font-family="var(--font-sans)">Start / End</text>
+      </svg>
+      <span class="badge b-green" style="margin-bottom:6px">Oval</span>
+      <p style="font-size:12px;margin:4px 0 0">Only at the very beginning or end. One arrow in OR out — never both.</p>
+    </div>
+    <div class="card" style="text-align:center;padding:14px">
+      <svg width="80" height="36" viewBox="0 0 80 36" style="display:block;margin:0 auto 8px">
+        <rect x="4" y="4" width="72" height="28" rx="4" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="40" y="18" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text)" font-family="var(--font-sans)">Action</text>
+      </svg>
+      <span class="badge b-blue" style="margin-bottom:6px">Rectangle</span>
+      <p style="font-size:12px;margin:4px 0 0">The algorithm does something. One arrow in, one arrow out.</p>
+    </div>
+    <div class="card" style="text-align:center;padding:14px">
+      <svg width="80" height="44" viewBox="0 0 80 44" style="display:block;margin:0 auto 8px">
+        <polygon points="40,2 76,22 40,42 4,22" fill="none" stroke="var(--color-border2)" stroke-width="0.5"/>
+        <text x="40" y="22" text-anchor="middle" dominant-baseline="central" font-size="11" fill="var(--color-text)" font-family="var(--font-sans)">Yes / No?</text>
+      </svg>
+      <span class="badge b-amber" style="margin-bottom:6px">Diamond</span>
+      <p style="font-size:12px;margin:4px 0 0">Asks a yes/no question. Always exactly two arrows out — labeled Yes and No.</p>
+    </div>
+  </div>
+  <h3>The golden rules</h3>
+  <div class="hint-box"><strong>Rule 1 — every arrow must lead somewhere.</strong> No arrow can point into thin air. It must connect to a shape.</div>
+  <div class="hint-box" style="margin-top:6px"><strong>Rule 2 — decisions always have exactly two exits.</strong> A diamond with one exit or three exits is wrong.</div>
+  <div class="hint-box" style="margin-top:6px"><strong>Rule 3 — start and end are ovals, not rectangles.</strong> Students commonly draw "Start" as a box — it should always be an oval.</div>
+  <div class="hint-box" style="margin-top:6px"><strong>Rule 4 — label your Yes and No arrows.</strong> Both arrows out of a decision diamond must be labeled so the reader knows which path is which.</div>
+  <div class="hint-box" style="margin-top:6px"><strong>Rule 5 — loops are fine.</strong> A "No" arrow can point back up to an earlier step. That's how you show waiting or retrying (like the toast example).</div>
+</div>
+
+<script>
+function switchTab(id,e){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  e.target.classList.add('active');
+}
+const shapeTips={
+  start:{label:'Start/End',shape:'Oval',cls:'b-green',note:'Where the algorithm begins. Only one arrow — going out. Always an oval.'},
+  end:{label:'Start/End',shape:'Oval',cls:'b-green',note:'Where the algorithm finishes. Only one arrow — coming in. Same oval as Start.'},
+  action:{label:'Action',shape:'Rectangle',cls:'b-blue',note:'The algorithm does something here. One arrow in, one arrow out.'},
+  decision:{label:'Decision',shape:'Diamond',cls:'b-amber',note:'A yes/no question. Two arrows go out — labeled Yes and No.'}
+};
+function showShapeTip(type){
+  const tip=document.getElementById('shape-tip');
+  const info=shapeTips[type];
+  tip.innerHTML=`<span class="badge ${info.cls}" style="margin-right:6px">${info.shape}</span><strong>${info.label}</strong> — ${info.note}`;
+  tip.style.display='block';
+  clearTimeout(tip._t);
+  tip._t=setTimeout(()=>{tip.style.display='none'},4000);
+}
+const readQs=[
+  {q:'How many action steps are in this flowchart?',opts:['2','3','4','5'],ans:2,explain:'There are 4 action steps: put bread in toaster, press lever down, remove toast, and spread butter.'},
+  {q:'What happens if the toast is NOT done yet?',opts:['The flowchart ends','It loops back to press lever down','You spread butter','You remove the toast'],ans:1,explain:'The "No" arrow loops back up to "Press lever down" — it keeps waiting until the toast is ready.'},
+  {q:'What shape is used for "Want butter?"',opts:['Oval','Rectangle','Diamond','Circle'],ans:2,explain:'"Want butter?" is a yes/no question, so it uses a diamond (decision) shape.'},
+  {q:'How many arrows come OUT of the "Toast done?" diamond?',opts:['1','2','3','4'],ans:1,explain:'Every decision diamond has exactly two arrows out — one for Yes and one for No.'},
+  {q:'If you do NOT want butter, what is the very next step?',opts:['Remove toast','Spread butter','End','Press lever down'],ans:2,explain:'The "No" path from "Want butter?" leads directly to the End oval — no more steps needed.'}
+];
+let readAnswered={};
+function buildReadQs(){
+  const cont=document.getElementById('q-read-container');
+  readQs.forEach((q,i)=>{
+    const div=document.createElement('div');
+    div.className='q-block';
+    div.innerHTML=`<p>${i+1}. ${q.q}</p><div class="choices" id="choices-${i}"></div><div class="feedback" id="fb-${i}"></div>`;
+    cont.appendChild(div);
+    const ch=div.querySelector('.choices');
+    q.opts.forEach((o,j)=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn'; btn.textContent=o;
+      btn.onclick=()=>answerRead(i,j,btn,ch);
+      ch.appendChild(btn);
+    });
+  });
+}
+function answerRead(qi,chosen,btn,container){
+  if(readAnswered[qi])return;
+  readAnswered[qi]=true;
+  const q=readQs[qi];
+  container.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if(chosen===q.ans){btn.classList.add('correct');document.getElementById('fb-'+qi).textContent='Correct! '+q.explain;}
+  else{btn.classList.add('wrong');container.querySelectorAll('.choice-btn')[q.ans].classList.add('correct');document.getElementById('fb-'+qi).textContent='Not quite. '+q.explain;}
+  updateReadScore();
+}
+function updateReadScore(){
+  const score=readQs.filter((_,i)=>{
+    if(!readAnswered[i])return false;
+    const btns=document.querySelectorAll(`#choices-${i} .choice-btn`);
+    const chosen=Array.from(btns).find(b=>b.classList.contains('correct')||b.classList.contains('wrong'));
+    return chosen&&chosen.classList.contains('correct');
+  }).length;
+  document.getElementById('read-score-display').textContent=score+' / '+readQs.length;
+  document.getElementById('read-score-fill').style.width=(score/readQs.length*100)+'%';
+  const lbl=document.getElementById('read-score-label');
+  if(score===readQs.length){lbl.textContent='All correct!';lbl.className='badge b-green';}
+  else if(score>=3){lbl.textContent='Getting there';lbl.className='badge b-blue';}
+  else{lbl.textContent='Keep going';lbl.className='badge b-gray';}
+}
+let dragItem=null;
+function dragStart(e){dragItem=e.target;}
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function dragLeave(e){e.currentTarget.classList.remove('over');}
+function dropChip(e,zoneId){
+  e.preventDefault();
+  const zone=document.getElementById(zoneId);
+  zone.classList.remove('over');
+  if(!dragItem)return;
+  const ph=zone.querySelector('p'); if(ph)ph.remove();
+  const clone=dragItem.cloneNode(true);
+  clone.draggable=false; clone.style.cursor='default'; clone.ondragstart=null;
+  zone.appendChild(clone);
+  dragItem.classList.add('placed'); dragItem.draggable=false;
+}
+const correctOrder1=['Start','Get dressed','Put on shoes','Is it cold outside?','Put on coat','End'];
+function checkOrder(){
+  const chips=document.getElementById('drop-1').querySelectorAll('.drag-chip');
+  const placed=Array.from(chips).map(c=>c.dataset.step);
+  const r=document.getElementById('order-result-1');
+  if(placed.length<6){r.textContent='Place all 6 steps first!';return;}
+  const correct=placed.filter((s,i)=>s===correctOrder1[i]).length;
+  if(correct===6)r.textContent='Perfect order! Start → Get dressed → Put on shoes → Is it cold outside? → Put on coat (if yes) → End.';
+  else r.textContent=correct+' of 6 in the right position. Hint: Start and End are always first and last. Decisions come after the actions they depend on.';
+}
+const labelSteps=[
+  {step:'Start',ans:'start'},{step:'Get two slices of bread',ans:'action'},
+  {step:'Is the bread toasted?',ans:'decision'},{step:'Add filling',ans:'action'},
+  {step:'Is it too dry?',ans:'decision'},{step:'Add sauce',ans:'action'},{step:'End',ans:'end'}
+];
+function buildLabelExercise(){
+  const cont=document.getElementById('label-exercise');
+  labelSteps.forEach((s,i)=>{
+    const row=document.createElement('div');
+    row.className='order-slot';
+    row.innerHTML=`<span class="slot-num">${i+1}</span><span style="flex:1;font-size:13px">${s.step}</span>
+      <select id="lbl-${i}"><option value="">— choose —</option><option value="start">Start/End</option><option value="action">Action</option><option value="decision">Decision</option></select>`;
+    cont.appendChild(row);
+  });
+}
+function checkLabels(){
+  let correct=0,filled=0;
+  labelSteps.forEach((s,i)=>{
+    const v=document.getElementById('lbl-'+i).value; if(!v)return; filled++;
+    const norm=v==='end'?'start':v; const ans=s.ans==='end'?'start':s.ans;
+    if(norm===ans)correct++;
+  });
+  const r=document.getElementById('label-result');
+  if(filled<labelSteps.length){r.textContent='Label all steps first!';return;}
+  if(correct===labelSteps.length)r.textContent='All correct! You identified every shape perfectly.';
+  else r.textContent=correct+' of '+labelSteps.length+' correct. Remember: ovals for Start/End, rectangles for actions, diamonds for yes/no questions.';
+}
+const bugs=[
+  {text:'Start is drawn as a rectangle (should be an oval)',correct:true},
+  {text:'"Walk to curb" has two arrows going out (actions only have one)',correct:true},
+  {text:'"Is the light green?" has no labels on its arrows (must say Yes and No)',correct:true},
+  {text:'End is drawn as an oval',correct:false},
+  {text:'"Cross the road" is drawn as a diamond',correct:false}
+];
+let bugSelected={};
+function buildBuggyFC(){
+  const cont=document.getElementById('buggy-fc');
+  bugs.forEach((b,i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border);cursor:pointer;font-size:13px;color:var(--color-text2)';
+    div.innerHTML=`<span id="bi-${i}" style="width:18px;height:18px;border-radius:4px;border:0.5px solid var(--color-border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:var(--color-bg2)"></span>${b.text}`;
+    div.onclick=()=>{
+      bugSelected[i]=!bugSelected[i];
+      const ic=document.getElementById('bi-'+i);
+      ic.style.background=bugSelected[i]?'var(--color-warning-bg)':'var(--color-bg2)';
+      ic.style.borderColor=bugSelected[i]?'var(--color-warning-border)':'var(--color-border2)';
+      ic.style.color=bugSelected[i]?'var(--color-warning-text)':'';
+      ic.textContent=bugSelected[i]?'!':'';
+    };
+    cont.appendChild(div);
+  });
+}
+function checkBugs(){
+  let tp=0,fp=0;
+  bugs.forEach((b,i)=>{if(bugSelected[i]&&b.correct)tp++;if(bugSelected[i]&&!b.correct)fp++;});
+  const r=document.getElementById('bug-result');
+  if(tp===3&&fp===0)r.textContent='Found all 3 mistakes! Start must be oval, arrows out of actions must be exactly one, and decision arrows must be labeled Yes/No.';
+  else if(tp===3)r.textContent='You found all the real bugs but also selected '+fp+' item(s) that are actually correct.';
+  else r.textContent='Found '+tp+' of 3 mistakes. Hint: check the Start shape, the number of arrows leaving each action, and the labels on decision arrows.';
+}
+buildReadQs(); buildLabelExercise(); buildBuggyFC();
+</script>
+</body>
+</html>

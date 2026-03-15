@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCompute — Scratch Practice Exercise</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, monospace;
+    --color-bg: #ffffff;
+    --color-bg2: #f5f5f3;
+    --color-bg3: #ebebea;
+    --color-text: #1a1a18;
+    --color-text2: #5a5a56;
+    --color-text3: #888780;
+    --color-border: rgba(0,0,0,0.12);
+    --color-border2: rgba(0,0,0,0.2);
+    --color-info-bg: #e6f1fb;
+    --color-info-text: #185fa5;
+    --color-info-border: #b5d4f4;
+    --color-success-bg: #eaf3de;
+    --color-success-text: #3b6d11;
+    --color-success-border: #c0dd97;
+    --color-warning-bg: #faeeda;
+    --color-warning-text: #854f0b;
+    --color-warning-border: #fac775;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #1e1e1c;
+      --color-bg2: #2a2a28;
+      --color-bg3: #333331;
+      --color-text: #e8e6de;
+      --color-text2: #9c9a92;
+      --color-text3: #6e6c66;
+      --color-border: rgba(255,255,255,0.1);
+      --color-border2: rgba(255,255,255,0.2);
+      --color-info-bg: #042c53;
+      --color-info-text: #85b7eb;
+      --color-info-border: #0c447c;
+      --color-success-bg: #173404;
+      --color-success-text: #97c459;
+      --color-success-border: #27500a;
+      --color-warning-bg: #412402;
+      --color-warning-text: #ef9f27;
+      --color-warning-border: #633806;
+    }
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    margin: 0 auto;
+    padding: 24px 20px;
+    max-width: 780px;
+  }
+  h2 { font-size: 20px; font-weight: 500; margin: 0 0 6px; color: var(--color-text); }
+  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 8px; color: var(--color-text); }
+  p, li { font-size: 14px; color: var(--color-text2); line-height: 1.7; margin: 0 0 6px; }
+  ul, ol { padding-left: 20px; margin: 0 0 12px; }
+  strong { font-weight: 500; color: var(--color-text); }
+  em { font-style: italic; }
+  .card { background: var(--color-bg); border: 0.5px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px 20px; margin: 0 0 16px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 10px; }
+  .b-blue  { background: var(--color-info-bg);    color: var(--color-info-text); }
+  .b-amber { background: var(--color-warning-bg); color: var(--color-warning-text); }
+  .b-green { background: var(--color-success-bg); color: var(--color-success-text); }
+  .b-gray  { background: var(--color-bg2);        color: var(--color-text2); }
+  .tab-bar { display: flex; gap: 6px; margin: 0 0 16px; border-bottom: 0.5px solid var(--color-border); }
+  .tab {
+    font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    color: var(--color-text2); border: 0.5px solid transparent; border-bottom: none;
+    transition: background 0.12s;
+  }
+  .tab:hover { background: var(--color-bg2); }
+  .tab.active { color: var(--color-text); background: var(--color-bg); border-color: var(--color-border); margin-bottom: -1px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .rubric-row { display: grid; grid-template-columns: 2fr 1fr 3fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border); font-size: 13px; color: var(--color-text2); }
+  .rubric-row:last-child { border-bottom: none; }
+  .rubric-head { font-weight: 500; color: var(--color-text2); font-size: 12px; padding: 0 0 6px; border-bottom: 0.5px solid var(--color-border2); }
+  .rubric-row .pts { font-weight: 500; color: var(--color-text); }
+  .block { display: inline-block; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin: 2px; font-family: var(--font-mono); }
+  .bl-motion   { background: #4d97ff; color: #fff; }
+  .bl-control  { background: #ffab19; color: #fff; }
+  .bl-looks    { background: #9966ff; color: #fff; }
+  .bl-sensing  { background: #5cb1d6; color: #fff; }
+  .bl-operators{ background: #59c059; color: #fff; }
+  .bl-events   { background: #ffbf00; color: #fff; }
+  .bl-vars     { background: #ff8c1a; color: #fff; }
+  .hint-box { background: var(--color-bg2); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--color-text2); margin: 8px 0; line-height: 1.6; }
+  .checklist label { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text2); padding: 6px 0; cursor: pointer; border-bottom: 0.5px solid var(--color-border); line-height: 1.5; }
+  .checklist label:last-child { border-bottom: none; }
+  .checklist input[type=checkbox] { margin-top: 3px; flex-shrink: 0; }
+  .checklist label.checked-item { color: var(--color-success-text); text-decoration: line-through; opacity: 0.7; }
+  .score-bar { height: 8px; border-radius: 4px; background: var(--color-bg3); margin: 6px 0; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 4px; background: var(--color-info-border); transition: width 0.3s; }
+  #score-display { font-size: 22px; font-weight: 500; color: var(--color-text); }
+  .difficulty { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .diff-btn {
+    font-size: 12px; padding: 5px 14px; border: 0.5px solid var(--color-border2);
+    border-radius: var(--radius-md); cursor: pointer; background: transparent;
+    color: var(--color-text2); font-family: var(--font-sans); transition: background 0.12s;
+  }
+  .diff-btn:hover { background: var(--color-bg2); }
+  .diff-btn.active { background: var(--color-info-bg); color: var(--color-info-text); border-color: var(--color-info-border); }
+  .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .header-row .meta { font-size: 13px; color: var(--color-text2); margin: 0; }
+  .cl-section-label { font-size: 12px; font-weight: 500; color: var(--color-text2); margin: 12px 0 8px; }
+  .cl-section-label:first-child { margin-top: 0; }
+</style>
+</head>
+<body>
+
+<div class="header-row">
+  <div>
+    <h2>iCompute — Scratch practice</h2>
+    <p class="meta">WESO 2026 · Section C · 30 points · Scratch 3.29 offline editor</p>
+  </div>
+  <span class="badge b-blue" style="margin-left:auto">Grades 4–5</span>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('challenge', event)">Challenge</div>
+  <div class="tab" onclick="switchTab('hints', event)">Hints &amp; blocks</div>
+  <div class="tab" onclick="switchTab('rubric', event)">Scoring rubric</div>
+  <div class="tab" onclick="switchTab('checklist', event)">Self-check</div>
+</div>
+
+<!-- CHALLENGE TAB -->
+<div id="tab-challenge" class="panel active">
+  <div class="difficulty">
+    <span style="font-size:13px;color:var(--color-text2);">Difficulty:</span>
+    <button class="diff-btn" onclick="setDiff('starter', event)">Starter</button>
+    <button class="diff-btn active" onclick="setDiff('standard', event)">Standard</button>
+    <button class="diff-btn" onclick="setDiff('challenge', event)">Challenge +</button>
+  </div>
+
+  <!-- STARTER -->
+  <div id="diff-starter" class="card" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span class="badge b-gray">Starter</span>
+      <span style="font-size:13px;color:var(--color-text2);">Good for first-time Scratch users</span>
+    </div>
+    <h3 style="margin-top:0">The weather guesser</h3>
+    <p>Create a Scratch program that asks the user for a temperature between 0 and 100. Based on the answer, the sprite should suggest an activity and change its costume to match the season.</p>
+    <ul>
+      <li>0–39 → say <em>"Time to ski!"</em> and switch to a winter backdrop</li>
+      <li>40–59 → say <em>"Great day for golf!"</em> and switch to a spring backdrop</li>
+      <li>60–79 → say <em>"Let's play tennis!"</em> and switch to a summer backdrop</li>
+      <li>80–100 → say <em>"Perfect for swimming!"</em> and switch to a sunny backdrop</li>
+    </ul>
+    <div class="hint-box"><strong>Note:</strong> This is very close to a real past WESO Section C question — great prep!</div>
+  </div>
+
+  <!-- STANDARD -->
+  <div id="diff-standard" class="card" style="display:block">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span class="badge b-blue">Standard</span>
+      <span style="font-size:13px;color:var(--color-text2);">Matches WESO competition level</span>
+    </div>
+    <h3 style="margin-top:0">The science quiz show</h3>
+    <p>Create a Scratch program that runs a 3-question science quiz. Use <strong>at least two sprites</strong> — one as the "host" and one as a "contestant." The program should:</p>
+    <ol>
+      <li>Ask the player each question one at a time using <strong>ask and wait</strong>.</li>
+      <li>Keep a running score — add 10 points for each correct answer.</li>
+      <li>After all 3 questions, the host should announce the final score and say something different depending on how well the player did:
+        <ul>
+          <li>30 points → <em>"Perfect score! You're a science star!"</em></li>
+          <li>10–20 points → <em>"Nice work! Keep studying!"</em></li>
+          <li>0 points → <em>"Better luck next time!"</em></li>
+        </ul>
+      </li>
+      <li>Add a backdrop and background music that plays throughout.</li>
+    </ol>
+    <div class="hint-box"><strong>You pick the questions!</strong> Use any three science facts you know — animals, planets, human body, etc. Keep answers simple (one word or number).</div>
+  </div>
+
+  <!-- CHALLENGE+ -->
+  <div id="diff-challenge" class="card" style="display:none">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <span class="badge b-amber">Challenge +</span>
+      <span style="font-size:13px;color:var(--color-text2);">Above &amp; beyond — targets full creativity/efficiency points</span>
+    </div>
+    <h3 style="margin-top:0">The number guessing game</h3>
+    <p>Create a Scratch program that picks a secret random number between 1 and 20, then lets the player guess until they get it right. The program should:</p>
+    <ol>
+      <li>Use <strong>pick random</strong> to choose the secret number at the start.</li>
+      <li>Ask the player to guess and store the answer.</li>
+      <li>Tell the player if their guess is <em>too high</em>, <em>too low</em>, or <em>correct</em>.</li>
+      <li>Keep looping until the player guesses correctly (<strong>repeat until</strong> block).</li>
+      <li>When correct, say how many guesses it took and play a victory sound.</li>
+      <li>Use a variable on screen to show the number of guesses live.</li>
+    </ol>
+    <div class="hint-box"><strong>Efficiency tip:</strong> Use one sprite with costumes for "happy," "confused," and "sad" to show feedback — no extra sprites needed. This is the kind of thing that earns the creativity/efficiency tiebreaker points.</div>
+  </div>
+</div>
+
+<!-- HINTS TAB -->
+<div id="tab-hints" class="panel">
+  <h3 style="margin-top:0">Key Scratch blocks for this exercise</h3>
+  <p>These are the blocks most likely to appear in Section C. Learn what each one does before competition day.</p>
+
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Events — starting your program</p>
+    <span class="block bl-events">when 🏳 clicked</span>
+    <span class="block bl-events">when [key] pressed</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Looks — what the sprite says/shows</p>
+    <span class="block bl-looks">say [ ] for (2) secs</span>
+    <span class="block bl-looks">say [ ]</span>
+    <span class="block bl-looks">switch backdrop to [ ]</span>
+    <span class="block bl-looks">switch costume to [ ]</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Sensing — getting player input</p>
+    <span class="block bl-sensing">ask [ ] and wait</span>
+    <span class="block bl-sensing">answer</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Control — making decisions &amp; loops</p>
+    <span class="block bl-control">if &lt; &gt; then</span>
+    <span class="block bl-control">if &lt; &gt; then / else</span>
+    <span class="block bl-control">repeat until &lt; &gt;</span>
+    <span class="block bl-control">wait (1) secs</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Operators — comparing &amp; math</p>
+    <span class="block bl-operators">( ) &gt; ( )</span>
+    <span class="block bl-operators">( ) &lt; ( )</span>
+    <span class="block bl-operators">( ) = ( )</span>
+    <span class="block bl-operators">( ) and ( )</span>
+    <span class="block bl-operators">join [ ] [ ]</span>
+    <span class="block bl-operators">pick random (1) to (10)</span>
+  </div>
+  <div style="margin-bottom:16px;">
+    <p style="font-size:12px;font-weight:500;color:var(--color-text2);margin-bottom:8px;">Variables — keeping track of numbers</p>
+    <span class="block bl-vars">set [score] to (0)</span>
+    <span class="block bl-vars">change [score] by (10)</span>
+  </div>
+  <div class="hint-box">
+    <strong>Competition tip:</strong> At the tournament you use Scratch 3.29 <em>offline</em> — no internet. Make sure you practice with the desktop app, not the website.
+  </div>
+</div>
+
+<!-- RUBRIC TAB -->
+<div id="tab-rubric" class="panel">
+  <p>This is the exact WESO 2026 Section C scoring breakdown. Use it to self-grade before competition day.</p>
+  <div class="card" style="padding:14px 16px;">
+    <div class="rubric-row rubric-head">
+      <span>Category</span><span>Points</span><span>What the judges look for</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Correct algorithm</span>
+      <span class="pts">10 pts</span>
+      <span>Uses the right programming constructs — if/else for decisions, loops for repetition, variables for tracking. The logic is correct even if there are small bugs.</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Working program</span>
+      <span class="pts">10 pts</span>
+      <span>The program actually runs and produces the correct output for the given task. No crashes.</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Precision</span>
+      <span class="pts">5 pts</span>
+      <span>Attention to detail — correct spelling in messages, right number of seconds, all edge cases handled (e.g. what happens at exactly 0 or exactly 100).</span>
+    </div>
+    <div class="rubric-row">
+      <span style="font-weight:500;color:var(--color-text)">Creativity &amp; efficiency</span>
+      <span class="pts">5 pts</span>
+      <span><strong>Tiebreaker.</strong> Extra sprites, costumes, sounds, clever use of loops to avoid repeated code, backdrop changes, custom blocks, etc.</span>
+    </div>
+    <div style="padding-top:12px;font-size:13px;color:var(--color-text2)">
+      Total Section C: <strong style="color:var(--color-text)">30 points</strong> &nbsp;·&nbsp; Full test total: <strong style="color:var(--color-text)">50 points</strong>
+    </div>
+  </div>
+  <div class="hint-box">
+    <strong>Coach tip:</strong> The creativity/efficiency 5 points are the tiebreaker — they only matter when two teams are tied on everything else. Don't let students spend the bulk of their 45 minutes decorating. Algorithm + working program = 20 points. That's where to focus.
+  </div>
+</div>
+
+<!-- SELF-CHECK TAB -->
+<div id="tab-checklist" class="panel">
+  <p>Use this before submitting. Check off each item your program accomplishes.</p>
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+    <span id="score-display">0 / 30</span>
+    <div style="flex:1">
+      <div class="score-bar"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
+    </div>
+    <span class="badge b-gray" id="score-label">Keep going</span>
+  </div>
+
+  <div class="card" style="padding:12px 16px;">
+    <p class="cl-section-label">Algorithm (up to 10 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="3" onchange="recalc()"> Uses if/else to make at least one decision based on player input</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> Uses a variable to track something (score, guesses, etc.)</label>
+      <label><input type="checkbox" value="4" onchange="recalc()"> Program logic is correct — the right things happen at the right time</label>
+    </div>
+    <p class="cl-section-label">Working program (up to 10 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="4" onchange="recalc()"> Program runs without crashing when green flag is clicked</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> All required outputs appear (correct messages/responses)</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> Program handles all cases (not just one branch of an if/else)</label>
+    </div>
+    <p class="cl-section-label">Precision (up to 5 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="2" onchange="recalc()"> Messages are spelled correctly and make sense</label>
+      <label><input type="checkbox" value="3" onchange="recalc()"> Edge cases handled (e.g. exactly 0, exactly 100, score = 30)</label>
+    </div>
+    <p class="cl-section-label">Creativity &amp; efficiency (up to 5 pts)</p>
+    <div class="checklist">
+      <label><input type="checkbox" value="2" onchange="recalc()"> Backdrop or costume changes add to the experience</label>
+      <label><input type="checkbox" value="1" onchange="recalc()"> Sound or music is included</label>
+      <label><input type="checkbox" value="2" onchange="recalc()"> Code is efficient — no unnecessary repeated blocks</label>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(id, e) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  e.target.classList.add('active');
+}
+function setDiff(d, e) {
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('diff-starter').style.display = d === 'starter' ? 'block' : 'none';
+  document.getElementById('diff-standard').style.display = d === 'standard' ? 'block' : 'none';
+  document.getElementById('diff-challenge').style.display = d === 'challenge' ? 'block' : 'none';
+}
+function recalc() {
+  let total = 0;
+  document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb => {
+    const label = cb.closest('label');
+    if (cb.checked) { total += parseInt(cb.value); label.classList.add('checked-item'); }
+    else { label.classList.remove('checked-item'); }
+  });
+  total = Math.min(total, 30);
+  document.getElementById('score-display').textContent = total + ' / 30';
+  document.getElementById('score-fill').style.width = (total / 30 * 100) + '%';
+  const lbl = document.getElementById('score-label');
+  if (total >= 28) { lbl.textContent = 'Competition ready!'; lbl.className = 'badge b-green'; }
+  else if (total >= 18) { lbl.textContent = 'Getting there'; lbl.className = 'badge b-blue'; }
+  else { lbl.textContent = 'Keep going'; lbl.className = 'badge b-gray'; }
+}
+</script>
+</body>
+</html>
