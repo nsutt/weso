@@ -50,10 +50,9 @@
     font-family: var(--font-sans);
     background: var(--color-bg);
     color: var(--color-text);
-    margin: 0;
+    margin: 0 auto;
     padding: 24px 20px;
     max-width: 780px;
-    margin: 0 auto;
   }
   h2 { font-size: 20px; font-weight: 500; margin: 0 0 6px; color: var(--color-text); }
   h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 8px; color: var(--color-text); }
@@ -84,6 +83,9 @@
   .bl-sensing { background: #5cb1d6; color: #fff; }
   .bl-operators { background: #59c059; color: #fff; }
   .bl-events { background: #ffbf00; color: #fff; }
+  .bl-vars   { background: #ff8c1a; color: #fff; }
+  .nav-back { font-size: 13px; color: var(--color-text2); text-decoration: none; flex-shrink: 0; }
+  .nav-back:hover { color: var(--color-text); }
   .hint-box { background: var(--color-bg2); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--color-text2); margin: 8px 0; line-height: 1.6; }
   .checklist label { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text2); padding: 6px 0; cursor: pointer; border-bottom: 0.5px solid var(--color-border); line-height: 1.5; }
   .checklist label:last-child { border-bottom: none; }
@@ -109,6 +111,7 @@
 <body>
 
 <div class="header-row">
+  <a href="index.html" class="nav-back">← Hub</a>
   <div>
     <h2>iCompute — Challenge 2: Animation &amp; movement</h2>
     <p class="meta">WESO 2026 · Section C · 30 points · Scratch 3.29 offline editor</p>
@@ -311,7 +314,24 @@ function switchTab(id, e) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  e.target.classList.add('active');
+  e.currentTarget.classList.add('active');
+}
+const STORE_KEY = 'weso_ex2_checklist';
+function saveChecklist() {
+  const state = [];
+  document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb => state.push(cb.checked));
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function loadChecklist() {
+  const raw = localStorage.getItem(STORE_KEY);
+  if (!raw) return;
+  try {
+    JSON.parse(raw).forEach((checked, i) => {
+      const cbs = document.querySelectorAll('.checklist input[type=checkbox]');
+      if (cbs[i]) cbs[i].checked = checked;
+    });
+  } catch(e) {}
+  recalc();
 }
 function setDiff(d, e) {
   document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
@@ -334,7 +354,9 @@ function recalc() {
   if (total >= 28) { lbl.textContent = 'Competition ready!'; lbl.className = 'badge b-green'; }
   else if (total >= 18) { lbl.textContent = 'Getting there'; lbl.className = 'badge b-blue'; }
   else { lbl.textContent = 'Keep going'; lbl.className = 'badge b-gray'; }
+  saveChecklist();
 }
+loadChecklist();
 </script>
 </body>
 </html>

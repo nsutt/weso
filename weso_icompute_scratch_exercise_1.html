@@ -113,11 +113,14 @@
   .header-row .meta { font-size: 13px; color: var(--color-text2); margin: 0; }
   .cl-section-label { font-size: 12px; font-weight: 500; color: var(--color-text2); margin: 12px 0 8px; }
   .cl-section-label:first-child { margin-top: 0; }
+  .nav-back { font-size: 13px; color: var(--color-text2); text-decoration: none; flex-shrink: 0; }
+  .nav-back:hover { color: var(--color-text); }
 </style>
 </head>
 <body>
 
 <div class="header-row">
+  <a href="index.html" class="nav-back">← Hub</a>
   <div>
     <h2>iCompute — Scratch practice</h2>
     <p class="meta">WESO 2026 · Section C · 30 points · Scratch 3.29 offline editor</p>
@@ -329,7 +332,24 @@ function switchTab(id, e) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  e.target.classList.add('active');
+  e.currentTarget.classList.add('active');
+}
+const STORE_KEY = 'weso_ex1_checklist';
+function saveChecklist() {
+  const state = [];
+  document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb => state.push(cb.checked));
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function loadChecklist() {
+  const raw = localStorage.getItem(STORE_KEY);
+  if (!raw) return;
+  try {
+    JSON.parse(raw).forEach((checked, i) => {
+      const cbs = document.querySelectorAll('.checklist input[type=checkbox]');
+      if (cbs[i]) cbs[i].checked = checked;
+    });
+  } catch(e) {}
+  recalc();
 }
 function setDiff(d, e) {
   document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
@@ -352,7 +372,9 @@ function recalc() {
   if (total >= 28) { lbl.textContent = 'Competition ready!'; lbl.className = 'badge b-green'; }
   else if (total >= 18) { lbl.textContent = 'Getting there'; lbl.className = 'badge b-blue'; }
   else { lbl.textContent = 'Keep going'; lbl.className = 'badge b-gray'; }
+  saveChecklist();
 }
+loadChecklist();
 </script>
 </body>
 </html>

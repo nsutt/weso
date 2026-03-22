@@ -80,6 +80,10 @@
   .theme-teal .card-icon     { background: rgba(106,247,194,.12); }
   .theme-teal .card-title    { color: var(--accent3); }
   .theme-teal .tag           { border-color: rgba(106,247,194,.3); color: var(--accent3); background: rgba(106,247,194,.07); }
+  .theme-red .card-accent   { background: #f76a6a; }
+  .theme-red .card-icon     { background: rgba(247,106,106,.12); }
+  .theme-red .card-title    { color: #f76a6a; }
+  .theme-red .tag           { border-color: rgba(247,106,106,.3); color: #f76a6a; background: rgba(247,106,106,.07); }
 
   .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 48px; }
   .tip-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; animation: fadeUp .5s ease both; }
@@ -126,13 +130,54 @@
         <div class="trophy-label">min on test day</div>
       </div>
       <div class="trophy-item">
-        <div class="trophy-num">3</div>
+        <div class="trophy-num" id="ex-count">3</div>
         <div class="trophy-label">exercises here</div>
       </div>
     </div>
   </header>
 
   <hr class="divider">
+
+  <div class="section-label">Practice Tests</div>
+  <div class="cards" style="margin-bottom:32px">
+
+    <a class="ex-card theme-red" href="weso_icompute_test_grade4.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-icon">&#9998;</div>
+        <div class="card-text">
+          <div class="card-title">Grade 4 — Full Practice Test</div>
+          <div class="card-desc">Timed 55-minute test: input/output devices, binary, flowchart shapes, binary conversion, algorithm trace, and a temperature-based activity suggester in Scratch.</div>
+          <div class="card-tags">
+            <span class="tag">All Sections</span>
+            <span class="tag">50 pts</span>
+            <span class="tag">Timed</span>
+            <span class="tag">Coach grading</span>
+          </div>
+        </div>
+        <div class="card-arrow">&#8594;</div>
+      </div>
+    </a>
+
+    <a class="ex-card theme-red" href="weso_icompute_test_grade5.html">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-icon">&#9998;</div>
+        <div class="card-text">
+          <div class="card-title">Grade 5 — Full Practice Test</div>
+          <div class="card-desc">Timed 55-minute test: 5 MC questions, 2 short answers, and a Scratch programming task. Password-gated coach grading panel with model answers and score entry.</div>
+          <div class="card-tags">
+            <span class="tag">All Sections</span>
+            <span class="tag">50 pts</span>
+            <span class="tag">Timed</span>
+            <span class="tag">Coach grading</span>
+          </div>
+        </div>
+        <div class="card-arrow">&#8594;</div>
+      </div>
+    </a>
+
+  </div>
 
   <div class="section-label">Exercises</div>
   <div class="cards">
@@ -155,7 +200,7 @@
       </div>
     </a>
 
-    <a class="ex-card theme-amber" href="weso_icompute_scratch_exercise.html">
+    <a class="ex-card theme-amber" href="weso_icompute_scratch_exercise_1.html">
       <div class="card-accent"></div>
       <div class="card-body">
         <div class="card-icon">&#9733;</div>
@@ -222,5 +267,39 @@
   </footer>
 
 </div>
+<script>
+  // Auto-update exercise count
+  document.getElementById('ex-count').textContent =
+    document.querySelectorAll('.cards .ex-card').length;
+
+  // Show progress badges from localStorage
+  function addProgressBadge(cardSel, storageKey, label) {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return;
+    try {
+      const state = JSON.parse(raw);
+      const done = state.filter(Boolean).length;
+      if (done === 0) return;
+      const card = document.querySelector(cardSel);
+      if (!card) return;
+      const badge = document.createElement('span');
+      badge.className = 'tag';
+      badge.textContent = done + '\u202f/\u202f' + state.length + ' checked';
+      card.querySelector('.card-tags').appendChild(badge);
+    } catch(e) {}
+  }
+  addProgressBadge('.theme-amber', 'weso_ex1_checklist');
+  addProgressBadge('.theme-teal',  'weso_ex2_checklist');
+
+  if (localStorage.getItem('weso_flowchart_visited')) {
+    const card = document.querySelector('.theme-purple');
+    if (card) {
+      const badge = document.createElement('span');
+      badge.className = 'tag';
+      badge.textContent = 'visited';
+      card.querySelector('.card-tags').appendChild(badge);
+    }
+  }
+</script>
 </body>
 </html>

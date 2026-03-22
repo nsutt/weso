@@ -80,11 +80,14 @@
   select { font-family: var(--font-sans); font-size: 12px; padding: 4px 8px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); background: var(--color-bg); color: var(--color-text); cursor: pointer; }
   .shape-tip-box { display: none; margin-top: 8px; padding: 10px 12px; background: var(--color-bg2); border-radius: var(--radius-md); font-size: 13px; color: var(--color-text2); }
   .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .nav-back { font-size: 13px; color: var(--color-text2); text-decoration: none; flex-shrink: 0; }
+  .nav-back:hover { color: var(--color-text); }
 </style>
 </head>
 <body>
 
 <div class="header-row">
+  <a href="index.html" class="nav-back">← Hub</a>
   <div>
     <h2>Flowcharts — reading &amp; building</h2>
     <p style="font-size:13px;margin:0">iCompute WESO prep · Section B &amp; C · everyday life scenarios</p>
@@ -250,7 +253,7 @@ function switchTab(id,e){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  e.target.classList.add('active');
+  e.currentTarget.classList.add('active');
 }
 const shapeTips={
   start:{label:'Start/End',shape:'Oval',cls:'b-green',note:'Where the algorithm begins. Only one arrow — going out. Always an oval.'},
@@ -274,6 +277,23 @@ const readQs=[
   {q:'If you do NOT want butter, what is the very next step?',opts:['Remove toast','Spread butter','End','Press lever down'],ans:2,explain:'The "No" path from "Want butter?" leads directly to the End oval — no more steps needed.'}
 ];
 let readAnswered={};
+let quizChosen=readQs.map(()=>null);
+function saveQuiz(){
+  localStorage.setItem('weso_flowchart_quiz',JSON.stringify(quizChosen));
+}
+function restoreQuiz(){
+  const raw=localStorage.getItem('weso_flowchart_quiz');
+  if(!raw)return;
+  try{
+    JSON.parse(raw).forEach((chosen,qi)=>{
+      if(chosen===null)return;
+      const container=document.getElementById('choices-'+qi);
+      if(!container)return;
+      const btn=container.querySelectorAll('.choice-btn')[chosen];
+      if(btn)answerRead(qi,chosen,btn,container);
+    });
+  }catch(e){}
+}
 function buildReadQs(){
   const cont=document.getElementById('q-read-container');
   readQs.forEach((q,i)=>{
@@ -293,6 +313,8 @@ function buildReadQs(){
 function answerRead(qi,chosen,btn,container){
   if(readAnswered[qi])return;
   readAnswered[qi]=true;
+  quizChosen[qi]=chosen;
+  saveQuiz();
   const q=readQs[qi];
   container.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
   if(chosen===q.ans){btn.classList.add('correct');document.getElementById('fb-'+qi).textContent='Correct! '+q.explain;}
@@ -398,7 +420,9 @@ function checkBugs(){
   else if(tp===3)r.textContent='You found all the real bugs but also selected '+fp+' item(s) that are actually correct.';
   else r.textContent='Found '+tp+' of 3 mistakes. Hint: check the Start shape, the number of arrows leaving each action, and the labels on decision arrows.';
 }
+localStorage.setItem('weso_flowchart_visited','1');
 buildReadQs(); buildLabelExercise(); buildBuggyFC();
+restoreQuiz();
 </script>
 </body>
 </html>
