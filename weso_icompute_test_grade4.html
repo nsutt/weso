@@ -419,8 +419,7 @@ Print "Your score is: " + score</div>
   <div class="res-hero">
     <p style="font-size:13px;color:var(--text2);margin-bottom:4px" id="res-byline"></p>
     <h2>Test Submitted</h2>
-    <div class="score-big" id="res-a-score">— / 10</div>
-    <div class="score-sub">Section A auto-graded &nbsp;·&nbsp; Sections B &amp; C graded by your coach</div>
+    <div class="score-sub">Your coach will grade your test and give you your final score.</div>
   </div>
 
   <div class="res-sec">
@@ -770,7 +769,7 @@ function submitTest() {
     div.innerHTML = `
       <div class="r-card-head">
         <span>Q${i}: ${info.q}</span>
-        <span class="${ok?'correct-tag':'wrong-tag'}">${ok?'+2 ✓':'0 ✗'}</span>
+        <span></span>
       </div>
       <div class="r-card-body">
         <strong>Your answer:</strong> ${got ? got.toUpperCase()+'. '+info.opts[got] : '<em style="color:var(--text3)">not answered</em>'}
@@ -778,7 +777,7 @@ function submitTest() {
     aC.appendChild(div);
   }
 
-  document.getElementById('res-a-score').textContent = aScore + ' / 10';
+  // aScore used for grading screen only
   document.getElementById('res-byline').textContent  = 'Results for ' + name;
   document.getElementById('res-b1a').textContent = document.getElementById('b1a').value || '(no answer)';
   document.getElementById('res-b1b').textContent = document.getElementById('b1b').value || '(no answer)';

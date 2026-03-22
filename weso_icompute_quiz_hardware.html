@@ -298,7 +298,6 @@ textarea:focus { outline:none; border-color:var(--acc-border); background:var(--
   <div class="res-section">
     <div class="res-section-head">
       <h3>Section A — Multiple Choice</h3>
-      <span class="res-score-tag" id="res-a-score">0 / 10</span>
     </div>
     <div id="res-a-cards"></div>
   </div>
@@ -511,7 +510,7 @@ function submitQuiz() {
     div.innerHTML = `
       <div class="r-card-head">
         <span>Q${i}: ${info.q}</span>
-        <span class="${ok?'correct-tag':'wrong-tag'}">${ok?'+2 ✓':'0 ✗'}</span>
+        <span></span>
       </div>
       <div class="r-card-body">
         <strong>Your answer:</strong> ${got ? got.toUpperCase()+'. '+info.opts[got] : '<em style="color:var(--text3)">not answered</em>'}
@@ -519,7 +518,7 @@ function submitQuiz() {
     aC.appendChild(div);
   }
 
-  document.getElementById('res-a-score').textContent = aScore + ' / 10';
+  // aScore used for grading screen only
   document.getElementById('res-byline').textContent  = 'Results for ' + name;
   document.getElementById('res-b1').textContent = document.getElementById('b1').value || '(no answer)';
   document.getElementById('res-b2').textContent = document.getElementById('b2').value || '(no answer)';
