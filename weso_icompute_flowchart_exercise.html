@@ -77,6 +77,23 @@
   .score-bar { height: 8px; border-radius: 4px; background: var(--color-bg3); margin: 6px 0; overflow: hidden; }
   .score-fill { height: 100%; border-radius: 4px; background: var(--color-info-border); transition: width .3s; }
   .progress-row { display: flex; align-items: center; gap: 14px; margin: 14px 0 0; }
+  .btn-submit-quiz { font-family:var(--font-sans); font-size:13px; font-weight:500; padding:9px 20px; background:var(--color-text); color:var(--color-bg); border:none; border-radius:var(--radius-md); cursor:pointer; margin-top:14px; }
+  .sq-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:300; }
+  .sq-box { background:var(--color-bg); border-radius:var(--radius-lg); padding:28px; width:min(520px,92vw); max-height:82vh; overflow-y:auto; }
+  .sq-box h3 { font-size:16px; font-weight:600; margin-bottom:4px; }
+  .sq-sub { font-size:13px; color:var(--color-text2); margin-bottom:20px; }
+  .sq-card { border:0.5px solid var(--color-border); border-radius:var(--radius-md); margin-bottom:8px; overflow:hidden; }
+  .sq-card-head { display:flex; justify-content:space-between; align-items:flex-start; padding:8px 14px; background:var(--color-bg2); font-size:12px; font-weight:500; gap:12px; }
+  .sq-card-body { padding:8px 14px; font-size:12px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .sq-ok  { padding:2px 7px; border-radius:5px; background:var(--color-success-bg); color:var(--color-success-text); font-size:11px; font-weight:600; display:inline-block; }
+  .sq-bad { padding:2px 7px; border-radius:5px; background:var(--color-danger-bg);  color:var(--color-danger-text);  font-size:11px; font-weight:600; display:inline-block; }
+  .sq-total { font-size:28px; font-weight:700; text-align:center; margin:16px 0 8px; font-variant-numeric:tabular-nums; }
+  .sq-pw-input { font-family:var(--font-sans); font-size:14px; width:100%; padding:8px 12px; border:0.5px solid var(--color-border2); border-radius:8px; background:var(--color-bg); color:var(--color-text); margin-bottom:8px; }
+  .sq-pw-input:focus { outline:none; border-color:var(--color-info-border); }
+  .sq-pw-err { font-size:12px; color:var(--color-danger-text); min-height:16px; margin-bottom:6px; }
+  .sq-btns { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  .sq-btns button { font-family:var(--font-sans); font-size:13px; padding:7px 14px; border-radius:8px; cursor:pointer; border:0.5px solid var(--color-border); background:var(--color-bg2); color:var(--color-text); }
+  .sq-btn-confirm { background:var(--color-text) !important; color:var(--color-bg) !important; border-color:transparent !important; }
   select { font-family: var(--font-sans); font-size: 12px; padding: 4px 8px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-md); background: var(--color-bg); color: var(--color-text); cursor: pointer; }
   .shape-tip-box { display: none; margin-top: 8px; padding: 10px 12px; background: var(--color-bg2); border-radius: var(--radius-md); font-size: 13px; color: var(--color-text2); }
   .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
@@ -167,6 +184,9 @@
     <span id="read-score-display" style="font-size:20px;font-weight:500">0 / 5</span>
     <div style="flex:1"><div class="score-bar"><div class="score-fill" id="read-score-fill" style="width:0%"></div></div></div>
     <span class="badge b-gray" id="read-score-label">Answer the questions</span>
+  </div>
+  <div style="text-align:right;margin-top:12px">
+    <button class="btn-submit-quiz" onclick="submitReadQuiz()">Submit Quiz →</button>
   </div>
 </div>
 
@@ -420,9 +440,75 @@ function checkBugs(){
   else if(tp===3)r.textContent='You found all the real bugs but also selected '+fp+' item(s) that are actually correct.';
   else r.textContent='Found '+tp+' of 3 mistakes. Hint: check the Start shape, the number of arrows leaving each action, and the labels on decision arrows.';
 }
+function submitReadQuiz() {
+  let score = 0;
+  const cards = document.getElementById('sq-cards');
+  cards.innerHTML = '';
+  readQs.forEach((q, i) => {
+    const answered = !!readAnswered[i];
+    const chosen = quizChosen[i];
+    const ok = answered && chosen === q.ans;
+    if (ok) score += 2;
+    const div = document.createElement('div');
+    div.className = 'sq-card';
+    div.innerHTML = `
+      <div class="sq-card-head">
+        <span>Q${i+1}: ${q.q}</span>
+        <span class="${ok?'sq-ok':'sq-bad'}">${ok?'+2 ✓':'0 ✗'}</span>
+      </div>
+      <div class="sq-card-body">
+        <div><strong>Your answer:</strong><br>${answered ? q.opts[chosen] : '<em>not answered</em>'}</div>
+        <div><strong>Correct:</strong><br><span class="sq-ok">${q.opts[q.ans]}</span></div>
+      </div>`;
+    cards.appendChild(div);
+  });
+  document.getElementById('sq-total').textContent = score + ' / 10';
+  document.getElementById('sq-confirmed-score').textContent = score + ' / 10';
+  document.getElementById('sq-pw-section').style.display = 'block';
+  document.getElementById('sq-confirmed').style.display = 'none';
+  document.getElementById('sq-pw').value = '';
+  document.getElementById('sq-pw-err').textContent = '';
+  document.getElementById('sq-overlay').style.display = 'flex';
+}
+function closeSqOverlay() {
+  document.getElementById('sq-overlay').style.display = 'none';
+}
+function checkSqPw() {
+  if (document.getElementById('sq-pw').value === 'icompute2026') {
+    document.getElementById('sq-pw-section').style.display = 'none';
+    document.getElementById('sq-confirmed').style.display = 'block';
+  } else {
+    document.getElementById('sq-pw-err').textContent = 'Incorrect password.';
+    document.getElementById('sq-pw').value = '';
+    document.getElementById('sq-pw').focus();
+  }
+}
+
 localStorage.setItem('weso_flowchart_visited','1');
 buildReadQs(); buildLabelExercise(); buildBuggyFC();
 restoreQuiz();
 </script>
+
+<div id="sq-overlay" class="sq-overlay" style="display:none" onclick="if(event.target===this)closeSqOverlay()">
+  <div class="sq-box" onclick="event.stopPropagation()">
+    <h3>Quiz Results</h3>
+    <div class="sq-sub">Flowchart Reading Quiz — 5 questions × 2 pts</div>
+    <div id="sq-cards"></div>
+    <div class="sq-total" id="sq-total">0 / 10</div>
+    <div id="sq-pw-section">
+      <div style="background:var(--color-warning-bg);border:0.5px solid var(--color-warning-border);border-radius:8px;padding:12px;font-size:12px;color:var(--color-warning-text);margin-bottom:12px">Coach: enter the grading password to confirm this score.</div>
+      <div class="sq-pw-err" id="sq-pw-err"></div>
+      <input class="sq-pw-input" type="password" id="sq-pw" placeholder="Grading password" onkeydown="if(event.key==='Enter')checkSqPw()">
+      <div class="sq-btns">
+        <button onclick="closeSqOverlay()">Close</button>
+        <button class="sq-btn-confirm" onclick="checkSqPw()">Unlock Grading</button>
+      </div>
+    </div>
+    <div id="sq-confirmed" style="display:none">
+      <div style="background:var(--color-success-bg);border:0.5px solid var(--color-success-border);border-radius:8px;padding:12px;font-size:12px;color:var(--color-success-text)">✓ Score confirmed: <strong id="sq-confirmed-score"></strong></div>
+      <div class="sq-btns"><button onclick="closeSqOverlay()">Close</button></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

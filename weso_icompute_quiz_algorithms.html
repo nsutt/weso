@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCompute — Algorithms &amp; Flowcharts Quiz</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#fff; --bg2:#f7f7f5; --bg3:#efefed;
+  --text:#1a1a18; --text2:#5a5a56; --text3:#888780;
+  --border:rgba(0,0,0,.12); --border2:rgba(0,0,0,.22);
+  --acc-bg:#faeeda; --acc-text:#854f0b; --acc-border:#fac775;
+  --green-bg:#eaf3de; --green-text:#3b6d11; --green-border:#c0dd97;
+  --red-bg:#fcebeb; --red-text:#a32d2d; --red-border:#f7c1c1;
+  --amber-bg:#faeeda; --amber-text:#854f0b; --amber-border:#fac775;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"SFMono-Regular",Consolas,monospace;
+  --r:10px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1c; --bg2:#2a2a28; --bg3:#333331;
+  --text:#e8e6de; --text2:#9c9a92; --text3:#6e6c66;
+  --border:rgba(255,255,255,.1); --border2:rgba(255,255,255,.2);
+  --acc-bg:#412402; --acc-text:#ef9f27; --acc-border:#633806;
+  --green-bg:#173404; --green-text:#97c459; --green-border:#27500a;
+  --red-bg:#501313; --red-text:#f09595; --red-border:#791f1f;
+  --amber-bg:#412402; --amber-text:#ef9f27; --amber-border:#633806;
+}}
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; }
+
+#start-screen { max-width:540px; margin:0 auto; padding:60px 24px; text-align:center; }
+.ev-badge { display:inline-block; font-size:11px; font-weight:500; padding:3px 12px; border-radius:20px; background:var(--acc-bg); color:var(--acc-text); letter-spacing:.07em; text-transform:uppercase; margin-bottom:20px; }
+.start-title { font-size:clamp(26px,5vw,38px); font-weight:600; line-height:1.2; margin-bottom:8px; }
+.start-sub { font-size:14px; color:var(--text2); line-height:1.7; margin-bottom:28px; }
+.info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:28px; }
+.info-cell { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:14px 8px; }
+.info-num { font-size:22px; font-weight:700; margin-bottom:2px; font-variant-numeric:tabular-nums; }
+.info-lbl { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; }
+.field-label { font-size:12px; color:var(--text2); display:block; margin-bottom:5px; text-align:left; }
+.text-input { font-family:var(--font); font-size:14px; width:100%; padding:9px 12px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg); color:var(--text); margin-bottom:20px; }
+.text-input:focus { outline:none; border-color:var(--acc-border); }
+.instr-box { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:16px 20px; text-align:left; margin-bottom:24px; }
+.instr-box h3 { font-size:13px; font-weight:600; margin-bottom:8px; }
+.instr-box li { font-size:13px; color:var(--text2); line-height:1.7; padding-left:4px; }
+.btn-primary { font-family:var(--font); font-size:15px; font-weight:500; padding:13px 24px; background:var(--text); color:var(--bg); border:none; border-radius:var(--r); cursor:pointer; width:100%; transition:opacity .15s; }
+.btn-primary:hover { opacity:.85; }
+.resume-notice { background:var(--amber-bg); border:0.5px solid var(--amber-border); border-radius:var(--r); padding:14px 18px; margin-bottom:16px; text-align:left; }
+.resume-notice p { font-size:13px; color:var(--amber-text); font-weight:500; margin-bottom:10px; }
+.resume-notice-btns { display:flex; gap:8px; }
+.btn-resume { font-family:var(--font); font-size:13px; font-weight:500; padding:8px 16px; background:var(--amber-text); color:#fff; border:none; border-radius:8px; cursor:pointer; }
+.btn-fresh  { font-family:var(--font); font-size:13px; padding:8px 16px; background:transparent; color:var(--amber-text); border:0.5px solid var(--amber-border); border-radius:8px; cursor:pointer; }
+
+#quiz-header { position:sticky; top:0; z-index:100; background:var(--bg); border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:10px 24px; gap:12px; }
+.hdr-left { display:flex; align-items:center; gap:14px; }
+.hdr-title { font-weight:600; font-size:14px; }
+.hdr-name { color:var(--text2); font-size:12px; }
+.nav-back { font-size:12px; color:var(--text2); text-decoration:none; }
+.nav-back:hover { color:var(--text); }
+.hdr-pts { font-size:12px; color:var(--text2); }
+.btn-reset { font-family:var(--font); font-size:11px; color:var(--text3); background:none; border:0.5px solid var(--border); border-radius:6px; padding:4px 10px; cursor:pointer; white-space:nowrap; }
+.btn-reset:hover { color:var(--red-text); border-color:var(--red-border); }
+
+#quiz-body { max-width:740px; margin:0 auto; padding:32px 24px 80px; }
+.sec-block { margin-bottom:48px; }
+.sec-head { display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:8px; }
+.sec-head h2 { font-size:17px; font-weight:600; }
+.sec-pts { font-size:11px; font-weight:500; padding:2px 9px; border-radius:10px; background:var(--acc-bg); color:var(--acc-text); }
+.sec-desc { font-size:13px; color:var(--text2); margin-bottom:18px; margin-top:8px; line-height:1.6; }
+.q-card { border:0.5px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:12px; }
+.q-num { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+.q-text { font-size:14px; font-weight:500; color:var(--text); margin-bottom:12px; line-height:1.5; }
+.opts { display:flex; flex-direction:column; gap:6px; }
+.opt { font-family:var(--font); font-size:13px; text-align:left; padding:8px 14px; border:0.5px solid var(--border2); border-radius:8px; background:transparent; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:10px; transition:background .1s,border-color .1s; }
+.opt:hover:not(.sel) { background:var(--bg2); }
+.opt.sel { background:var(--acc-bg); border-color:var(--acc-border); color:var(--acc-text); }
+.opt-ltr { font-size:11px; font-weight:600; color:var(--text3); width:14px; flex-shrink:0; }
+.opt.sel .opt-ltr { color:var(--acc-text); }
+.sa-card { border:0.5px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:12px; }
+.sa-text { font-size:14px; color:var(--text); line-height:1.7; }
+.sa-part { margin-top:14px; padding-top:12px; border-top:0.5px solid var(--border); }
+.sa-part-lbl { font-size:11px; font-weight:600; color:var(--text2); margin-bottom:6px; }
+textarea { font-family:var(--font); font-size:13px; width:100%; min-height:78px; padding:10px 12px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg2); color:var(--text); resize:vertical; line-height:1.6; }
+textarea:focus { outline:none; border-color:var(--acc-border); background:var(--bg); }
+.pseudo { background:var(--bg2); border-radius:8px; padding:10px 14px; font-family:var(--mono); font-size:13px; color:var(--text2); line-height:1.9; margin:10px 0; overflow-x:auto; white-space:pre; border:0.5px solid var(--border); }
+.submit-row { text-align:center; padding:0 0 60px; }
+.btn-submit { font-family:var(--font); font-size:15px; font-weight:500; padding:13px 36px; background:var(--text); color:var(--bg); border:none; border-radius:var(--r); cursor:pointer; transition:opacity .15s; }
+.btn-submit:hover { opacity:.85; }
+
+#results-screen { max-width:740px; margin:0 auto; padding:32px 24px 80px; display:none; }
+.res-header { margin-bottom:32px; }
+.res-title { font-size:24px; font-weight:600; margin-bottom:4px; }
+.res-byline { font-size:13px; color:var(--text2); }
+.res-section { margin-bottom:36px; }
+.res-section-head { display:flex; align-items:baseline; gap:12px; margin-bottom:16px; padding-bottom:12px; border-bottom:0.5px solid var(--border); }
+.res-section-head h3 { font-size:15px; font-weight:600; }
+.res-score-tag { font-size:13px; font-weight:600; padding:3px 10px; border-radius:8px; background:var(--acc-bg); color:var(--acc-text); }
+.r-card { border:0.5px solid var(--border); border-radius:var(--r); margin-bottom:10px; overflow:hidden; }
+.r-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:10px 16px; background:var(--bg2); font-size:13px; font-weight:500; }
+.r-card-body { padding:10px 16px; font-size:13px; }
+.r-card-body-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.correct-tag { display:inline-block; padding:2px 8px; border-radius:6px; background:var(--green-bg); color:var(--green-text); font-size:12px; font-weight:600; }
+.wrong-tag   { display:inline-block; padding:2px 8px; border-radius:6px; background:var(--red-bg);   color:var(--red-text);   font-size:12px; font-weight:600; }
+.r-explain { font-size:12px; color:var(--text2); line-height:1.6; margin-top:8px; padding-top:8px; border-top:0.5px solid var(--border); }
+.res-sa-answer { font-size:13px; color:var(--text2); line-height:1.7; white-space:pre-wrap; background:var(--bg2); padding:10px 14px; border-radius:8px; min-height:40px; }
+.coach-notice { background:var(--amber-bg); border:0.5px solid var(--amber-border); border-radius:var(--r); padding:14px 18px; font-size:13px; color:var(--amber-text); margin-bottom:20px; line-height:1.6; }
+.btn-grade { font-family:var(--font); font-size:14px; font-weight:500; padding:11px 24px; background:var(--text); color:var(--bg); border:none; border-radius:var(--r); cursor:pointer; }
+
+#grading-screen { max-width:780px; margin:0 auto; padding:32px 24px 80px; display:none; }
+.grade-header { margin-bottom:28px; }
+.grade-title { font-size:20px; font-weight:600; margin-bottom:4px; }
+.grade-sub { font-size:13px; color:var(--text2); }
+.g-section { margin-bottom:36px; }
+.g-section-head { display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:16px; }
+.g-section-head h3 { font-size:15px; font-weight:600; }
+.g-card { border:0.5px solid var(--border); border-radius:var(--r); margin-bottom:10px; overflow:hidden; }
+.g-card-head { display:flex; justify-content:space-between; padding:10px 16px; background:var(--bg2); font-size:13px; font-weight:500; }
+.g-card-body { padding:12px 16px; }
+.g-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px; }
+.g-field label { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; display:block; margin-bottom:4px; }
+.g-val { font-size:13px; padding:6px 10px; border-radius:6px; border:0.5px solid var(--border); }
+.g-val.iscorrect { background:var(--green-bg); color:var(--green-text); border-color:var(--green-border); }
+.g-val.iswrong   { background:var(--red-bg);   color:var(--red-text);   border-color:var(--red-border); }
+.g-student-ans { font-size:13px; color:var(--text2); line-height:1.7; white-space:pre-wrap; background:var(--bg2); padding:10px 14px; border-radius:8px; min-height:36px; margin-bottom:10px; }
+.model-ans { background:var(--green-bg); border:0.5px solid var(--green-border); border-radius:8px; padding:10px 14px; font-size:12px; color:var(--green-text); line-height:1.7; margin-bottom:10px; }
+.g-score-row { display:flex; align-items:center; justify-content:flex-end; gap:10px; padding-top:10px; border-top:0.5px solid var(--border); }
+.g-score-lbl { font-size:13px; color:var(--text2); }
+.g-score-input { font-family:var(--mono); font-size:16px; font-weight:600; width:52px; text-align:center; padding:5px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg2); color:var(--text); }
+.g-score-max { font-size:12px; color:var(--text3); }
+.total-box { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:20px 24px; display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
+.total-score { font-size:32px; font-weight:700; font-variant-numeric:tabular-nums; }
+.total-breakdown { font-size:13px; color:var(--text2); margin-top:2px; }
+.btn-back-res { font-family:var(--font); font-size:13px; color:var(--text2); background:none; border:0.5px solid var(--border); border-radius:8px; padding:7px 16px; cursor:pointer; }
+
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:200; }
+.modal { background:var(--bg); border-radius:12px; padding:28px; width:min(360px,90vw); }
+.modal h3 { font-size:16px; font-weight:600; margin-bottom:6px; }
+.modal p  { font-size:13px; color:var(--text2); margin-bottom:16px; }
+.modal-err { font-size:12px; color:var(--red-text); min-height:16px; margin-bottom:6px; }
+.pw-input { font-family:var(--font); font-size:14px; width:100%; padding:9px 12px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg); color:var(--text); margin-bottom:12px; }
+.pw-input:focus { outline:none; border-color:var(--acc-border); }
+.modal-btns { display:flex; gap:8px; justify-content:flex-end; }
+.modal-btns button { font-family:var(--font); font-size:13px; padding:7px 16px; border-radius:8px; cursor:pointer; border:0.5px solid var(--border); background:var(--bg2); color:var(--text); }
+.btn-confirm { background:var(--text) !important; color:var(--bg) !important; border-color:transparent !important; }
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="start-screen">
+  <div class="ev-badge">Practice Quiz · Grade 4 &amp; 5</div>
+  <h1 class="start-title">Algorithms &amp; Flowcharts</h1>
+  <p class="start-sub">Practice questions on algorithms, flowchart symbols, pseudocode, and how computers follow step-by-step instructions.</p>
+  <div class="info-grid">
+    <div class="info-cell"><div class="info-num">5</div><div class="info-lbl">MC Questions</div></div>
+    <div class="info-cell"><div class="info-num">2</div><div class="info-lbl">Short Answer</div></div>
+    <div class="info-cell"><div class="info-num">20</div><div class="info-lbl">Points Total</div></div>
+  </div>
+  <div class="resume-notice" id="resume-notice" style="display:none">
+    <p>↩ Saved progress found for <strong id="saved-name-display"></strong></p>
+    <div class="resume-notice-btns">
+      <button class="btn-resume" onclick="resumeQuiz()">Resume Quiz</button>
+      <button class="btn-fresh"  onclick="startFresh()">Start Fresh</button>
+    </div>
+  </div>
+  <label class="field-label" for="student-name">Your name</label>
+  <input class="text-input" id="student-name" type="text" placeholder="Enter your name…" autocomplete="off">
+  <div class="instr-box">
+    <h3>Instructions</h3>
+    <ul>
+      <li>Section A: choose the best answer for each multiple choice question</li>
+      <li>Section B: describe and trace algorithms in your own words</li>
+      <li>Click Submit Quiz when you are finished</li>
+      <li>Your coach will grade Section B and give you your final score</li>
+    </ul>
+  </div>
+  <button class="btn-primary" id="begin-btn" onclick="startQuiz()">Begin Quiz →</button>
+</div>
+
+<!-- QUIZ HEADER -->
+<div id="quiz-header" style="display:none">
+  <div class="hdr-left">
+    <a href="index.html" class="nav-back">← Hub</a>
+    <div>
+      <div class="hdr-title">Algorithms &amp; Flowcharts</div>
+      <div class="hdr-name" id="hdr-name"></div>
+    </div>
+  </div>
+  <div class="hdr-pts">20 pts total</div>
+  <button class="btn-reset" onclick="clearAndReset()">↺ Reset</button>
+</div>
+
+<!-- QUIZ BODY -->
+<div id="quiz-body" style="display:none">
+  <div style="max-width:740px;margin:0 auto;padding:32px 24px 80px">
+
+    <!-- Section A -->
+    <div class="sec-block">
+      <div class="sec-head"><h2>Section A — Multiple Choice</h2><span class="sec-pts">10 pts</span></div>
+      <p class="sec-desc">Choose the best answer. Each question is worth 2 points.</p>
+
+      <div class="q-card" id="qa-1">
+        <div class="q-num">Question 1</div>
+        <div class="q-text">Which flowchart shape is used to show a YES/NO decision?</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(1,'a')"><span class="opt-ltr">A</span>Rectangle</button>
+          <button class="opt" onclick="pick(1,'b')"><span class="opt-ltr">B</span>Circle</button>
+          <button class="opt" onclick="pick(1,'c')"><span class="opt-ltr">C</span>Oval</button>
+          <button class="opt" onclick="pick(1,'d')"><span class="opt-ltr">D</span>Diamond</button>
+        </div>
+      </div>
+
+      <div class="q-card" id="qa-2">
+        <div class="q-num">Question 2</div>
+        <div class="q-text">Which flowchart shape represents a PROCESS step (an action the program takes)?</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(2,'a')"><span class="opt-ltr">A</span>Rectangle</button>
+          <button class="opt" onclick="pick(2,'b')"><span class="opt-ltr">B</span>Diamond</button>
+          <button class="opt" onclick="pick(2,'c')"><span class="opt-ltr">C</span>Oval</button>
+          <button class="opt" onclick="pick(2,'d')"><span class="opt-ltr">D</span>Triangle</button>
+        </div>
+      </div>
+
+      <div class="q-card" id="qa-3">
+        <div class="q-num">Question 3</div>
+        <div class="q-text">What does a LOOP do in a program?</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(3,'a')"><span class="opt-ltr">A</span>Makes a yes/no decision</button>
+          <button class="opt" onclick="pick(3,'b')"><span class="opt-ltr">B</span>Stores a value in memory</button>
+          <button class="opt" onclick="pick(3,'c')"><span class="opt-ltr">C</span>Repeats a set of instructions</button>
+          <button class="opt" onclick="pick(3,'d')"><span class="opt-ltr">D</span>Ends the program</button>
+        </div>
+      </div>
+
+      <div class="q-card" id="qa-4">
+        <div class="q-num">Question 4</div>
+        <div class="q-text">What is an algorithm?</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(4,'a')"><span class="opt-ltr">A</span>A computer program</button>
+          <button class="opt" onclick="pick(4,'b')"><span class="opt-ltr">B</span>A step-by-step set of instructions to solve a problem</button>
+          <button class="opt" onclick="pick(4,'c')"><span class="opt-ltr">C</span>A type of computer hardware</button>
+          <button class="opt" onclick="pick(4,'d')"><span class="opt-ltr">D</span>A way to store data</button>
+        </div>
+      </div>
+
+      <div class="q-card" id="qa-5">
+        <div class="q-num">Question 5</div>
+        <div class="q-text">What does this pseudocode output?
+          <div class="pseudo">SET x = 3
+SET x = x + 2
+PRINT x</div>
+        </div>
+        <div class="opts">
+          <button class="opt" onclick="pick(5,'a')"><span class="opt-ltr">A</span>3</button>
+          <button class="opt" onclick="pick(5,'b')"><span class="opt-ltr">B</span>2</button>
+          <button class="opt" onclick="pick(5,'c')"><span class="opt-ltr">C</span>5</button>
+          <button class="opt" onclick="pick(5,'d')"><span class="opt-ltr">D</span>7</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section B -->
+    <div class="sec-block">
+      <div class="sec-head"><h2>Section B — Short Answer</h2><span class="sec-pts">10 pts</span></div>
+      <p class="sec-desc">Answer in full sentences. Each question is worth 5 points.</p>
+
+      <div class="sa-card">
+        <div class="sa-text"><strong>Question 6 (5 pts):</strong> Describe what each of these three flowchart shapes is used for: <strong>Rectangle</strong>, <strong>Diamond</strong>, <strong>Oval</strong>. Give an example of each.</div>
+        <div class="sa-part">
+          <div class="sa-part-lbl">Your answer</div>
+          <textarea id="b1" placeholder="Write your answer here…"></textarea>
+        </div>
+      </div>
+
+      <div class="sa-card">
+        <div class="sa-text"><strong>Question 7 (5 pts):</strong> Trace through the pseudocode below and write exactly what it outputs, step by step.
+          <div class="pseudo" style="margin-top:10px">SET count = 1
+REPEAT 3 TIMES
+  PRINT count
+  SET count = count + 1
+END REPEAT</div>
+        </div>
+        <div class="sa-part">
+          <div class="sa-part-lbl">Your trace and output</div>
+          <textarea id="b2" placeholder="Show each step and what gets printed…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn-submit" onclick="submitQuiz()">Submit Quiz →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div id="results-screen">
+  <div class="res-header">
+    <div class="res-title">Quiz Complete!</div>
+    <div class="res-byline" id="res-byline">Results for Student</div>
+  </div>
+
+  <div class="res-section">
+    <div class="res-section-head">
+      <h3>Section A — Multiple Choice</h3>
+      <span class="res-score-tag" id="res-a-score">0 / 10</span>
+    </div>
+    <div id="res-a-cards"></div>
+  </div>
+
+  <div class="res-section">
+    <div class="res-section-head">
+      <h3>Section B — Short Answer</h3>
+      <span style="font-size:13px;color:var(--text2)">Awaiting coach grade</span>
+    </div>
+    <div class="sa-card">
+      <div class="sa-text" style="margin-bottom:10px"><strong>Q6:</strong> Describe Rectangle, Diamond, Oval flowchart shapes with examples.</div>
+      <div class="res-sa-answer" id="res-b1"></div>
+    </div>
+    <div class="sa-card">
+      <div class="sa-text" style="margin-bottom:10px"><strong>Q7:</strong> Trace the REPEAT pseudocode and write what it outputs.</div>
+      <div class="res-sa-answer" id="res-b2"></div>
+    </div>
+  </div>
+
+  <div class="coach-notice">Section B needs to be graded by your coach. Ask them to click the button below and enter the grading password.</div>
+  <button class="btn-grade" onclick="openModal()">Grade This Quiz →</button>
+</div>
+
+<!-- GRADING SCREEN -->
+<div id="grading-screen">
+  <div class="grade-header">
+    <div class="grade-title">Coach Grading Panel</div>
+    <div class="grade-sub">Grading: <strong id="grade-name"></strong></div>
+  </div>
+
+  <div class="g-section">
+    <div class="g-section-head">
+      <h3>Section A — Multiple Choice</h3>
+      <span style="font-size:13px;color:var(--text2)">Auto-graded: <strong id="g-a-pts">0</strong> / 10</span>
+    </div>
+    <div id="g-a-cards"></div>
+  </div>
+
+  <div class="g-section">
+    <div class="g-section-head">
+      <h3>Section B — Short Answer</h3>
+      <span style="font-size:13px;color:var(--text2)">Manual: <strong id="g-b-pts">0</strong> / 10</span>
+    </div>
+
+    <div class="g-card">
+      <div class="g-card-head"><span>Q6: Describe Rectangle, Diamond, and Oval flowchart shapes with examples.</span><span>/ 5 pts</span></div>
+      <div class="g-card-body">
+        <div style="margin-bottom:4px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Student answer</div>
+        <div class="g-student-ans" id="g-b1-ans"></div>
+        <div class="model-ans"><strong>Model answer (~1.5–2 pts per shape):</strong> Rectangle — process/action step; something the program does (e.g. "Add 1 to score", "Display message"). Diamond — decision with YES/NO branches (e.g. "Is score &gt; 10?"). Oval — the START or END point of the flowchart. Award partial credit for partially correct descriptions.</div>
+        <div class="g-score-row">
+          <span class="g-score-lbl">Score</span>
+          <input type="number" class="g-score-input" id="sc-b1" min="0" max="5" value="0" oninput="recalcTotals()">
+          <span class="g-score-max">/ 5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="g-card-head"><span>Q7: Trace REPEAT pseudocode — SET count=1, REPEAT 3 TIMES PRINT count, count+1</span><span>/ 5 pts</span></div>
+      <div class="g-card-body">
+        <div style="margin-bottom:4px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Student answer</div>
+        <div class="g-student-ans" id="g-b2-ans"></div>
+        <div class="model-ans"><strong>Output: 1, 2, 3</strong> (each on a new line). Trace: Loop 1 — PRINT 1, count becomes 2. Loop 2 — PRINT 2, count becomes 3. Loop 3 — PRINT 3, count becomes 4. END. Award 3 pts for correct output (1, 2, 3), 2 pts for showing the trace step by step.</div>
+        <div class="g-score-row">
+          <span class="g-score-lbl">Score</span>
+          <input type="number" class="g-score-input" id="sc-b2" min="0" max="5" value="0" oninput="recalcTotals()">
+          <span class="g-score-max">/ 5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-box">
+    <div>
+      <div class="total-score" id="total-score">0 / 20</div>
+      <div class="total-breakdown" id="total-breakdown">A: 0 · B: 0</div>
+    </div>
+    <button class="btn-back-res" onclick="showStudentResults()">← Student View</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="modal" style="display:none" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Coach Access</h3>
+    <p>Enter the grading password to view model answers and record scores.</p>
+    <div class="modal-err" id="modal-err"></div>
+    <input class="pw-input" type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="checkPw()">Unlock Grading</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'weso_quiz_algo';
+const CORRECT   = {1:'d', 2:'a', 3:'c', 4:'b', 5:'c'};
+const Q_INFO    = {
+  1:{q:'Flowchart shape for a YES/NO decision?',          opts:{a:'Rectangle',b:'Circle',c:'Oval',d:'Diamond'}},
+  2:{q:'Flowchart shape for a PROCESS step?',             opts:{a:'Rectangle',b:'Diamond',c:'Oval',d:'Triangle'}},
+  3:{q:'What does a LOOP do?',                            opts:{a:'Makes a yes/no decision',b:'Stores a value in memory',c:'Repeats a set of instructions',d:'Ends the program'}},
+  4:{q:'What is an algorithm?',                           opts:{a:'A computer program',b:'A step-by-step set of instructions to solve a problem',c:'A type of hardware',d:'A way to store data'}},
+  5:{q:'Output of: SET x=3 / SET x=x+2 / PRINT x?',     opts:{a:'3',b:'2',c:'5',d:'7'}}
+};
+const EXPLAIN = {
+  1:"A diamond (◇) shape always means a decision in a flowchart — it has a YES path and a NO path coming out of it.",
+  2:"A rectangle (□) represents an action or process step — something the program does, like 'Add 1 to score' or 'Display message'.",
+  3:"A loop repeats its block of instructions — either a fixed number of times (REPEAT 10) or while a condition is true (WHILE / forever).",
+  4:"An algorithm is the plan or method — a step-by-step description of how to solve a problem. A program is one way of implementing an algorithm.",
+  5:"x starts at 3. Then SET x = x+2 means x = 3+2 = 5. Then PRINT x outputs 5."
+};
+const PASSWORD = 'icompute2026';
+
+let chosen = {};
+let startTimestamp = null;
+
+function saveState() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      name: document.getElementById('hdr-name').textContent || '',
+      startTimestamp, chosen,
+      b1: document.getElementById('b1')?.value || '',
+      b2: document.getElementById('b2')?.value || ''
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (!s.startTimestamp) return;
+    document.getElementById('student-name').value = s.name || '';
+    document.getElementById('saved-name-display').textContent = s.name || 'Student';
+    document.getElementById('resume-notice').style.display = 'block';
+    document.getElementById('begin-btn').style.display = 'none';
+    window._savedState = s;
+  } catch(e) {}
+}
+
+function resumeQuiz() {
+  const s = window._savedState;
+  if (!s) return;
+  startTimestamp = s.startTimestamp;
+  chosen = s.chosen || {};
+  document.getElementById('hdr-name').textContent = s.name || 'Student';
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-header').style.display  = 'flex';
+  document.getElementById('quiz-body').style.display    = 'block';
+  for (const [n, letter] of Object.entries(chosen)) {
+    const card = document.getElementById('qa-' + n);
+    if (!card) continue;
+    const idx = {a:0,b:1,c:2,d:3}[letter];
+    if (idx !== undefined) card.querySelectorAll('.opt')[idx]?.classList.add('sel');
+  }
+  document.getElementById('b1').value = s.b1 || '';
+  document.getElementById('b2').value = s.b2 || '';
+  window.scrollTo(0, 0);
+}
+
+function startFresh() {
+  if (!confirm('Clear saved progress and start a new quiz?')) return;
+  localStorage.removeItem(STORE_KEY);
+  location.reload();
+}
+
+function clearAndReset() {
+  if (!confirm('Reset this quiz? All answers will be cleared.')) return;
+  localStorage.removeItem(STORE_KEY);
+  location.reload();
+}
+
+function startQuiz() {
+  const name = document.getElementById('student-name').value.trim() || 'Student';
+  document.getElementById('hdr-name').textContent = name;
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-header').style.display  = 'flex';
+  document.getElementById('quiz-body').style.display    = 'block';
+  startTimestamp = Date.now();
+  saveState();
+  window.scrollTo(0, 0);
+}
+
+function pick(n, letter) {
+  chosen[n] = letter;
+  const card = document.getElementById('qa-' + n);
+  card.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
+  card.querySelectorAll('.opt')[{a:0,b:1,c:2,d:3}[letter]].classList.add('sel');
+  saveState();
+}
+
+function submitQuiz() {
+  localStorage.removeItem(STORE_KEY);
+  const name = document.getElementById('hdr-name').textContent;
+
+  let aScore = 0;
+  const aC = document.getElementById('res-a-cards');
+  aC.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const got = chosen[i] || null;
+    const ans = CORRECT[i];
+    const ok  = got === ans;
+    if (ok) aScore += 2;
+    const info = Q_INFO[i];
+    const div = document.createElement('div');
+    div.className = 'r-card';
+    div.innerHTML = `
+      <div class="r-card-head">
+        <span>Q${i}: ${info.q}</span>
+        <span class="${ok?'correct-tag':'wrong-tag'}">${ok?'+2 ✓':'0 ✗'}</span>
+      </div>
+      <div class="r-card-body">
+        <div class="r-card-body-grid">
+          <div><strong>Your answer:</strong><br>${got ? got.toUpperCase()+'. '+info.opts[got] : '<em style="color:var(--text3)">not answered</em>'}</div>
+          <div><strong>Correct answer:</strong><br><span class="correct-tag">${ans.toUpperCase()}. ${info.opts[ans]}</span></div>
+        </div>
+        <div class="r-explain">${EXPLAIN[i]}</div>
+      </div>`;
+    aC.appendChild(div);
+  }
+
+  document.getElementById('res-a-score').textContent = aScore + ' / 10';
+  document.getElementById('res-byline').textContent  = 'Results for ' + name;
+  document.getElementById('res-b1').textContent = document.getElementById('b1').value || '(no answer)';
+  document.getElementById('res-b2').textContent = document.getElementById('b2').value || '(no answer)';
+
+  document.getElementById('grade-name').textContent = name;
+  document.getElementById('g-a-pts').textContent = aScore;
+  document.getElementById('g-b1-ans').textContent = document.getElementById('b1').value || '(no answer)';
+  document.getElementById('g-b2-ans').textContent = document.getElementById('b2').value || '(no answer)';
+  buildGradeA(aScore);
+
+  document.getElementById('quiz-header').style.display = 'none';
+  document.getElementById('quiz-body').style.display   = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function buildGradeA(aScore) {
+  const c = document.getElementById('g-a-cards');
+  c.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const got = chosen[i] || null;
+    const ans = CORRECT[i];
+    const ok  = got === ans;
+    const info = Q_INFO[i];
+    const div = document.createElement('div');
+    div.className = 'g-card';
+    div.innerHTML = `
+      <div class="g-card-head"><span>Q${i}: ${info.q}</span><span>${ok?'+2':'0'} / 2 pts</span></div>
+      <div class="g-card-body">
+        <div class="g-row">
+          <div class="g-field"><label>Student answer</label>
+            <div class="g-val ${ok?'iscorrect':'iswrong'}">${got ? got.toUpperCase()+'. '+info.opts[got] : '(not answered)'}</div>
+          </div>
+          <div class="g-field"><label>Correct answer</label>
+            <div class="g-val iscorrect">${ans.toUpperCase()}. ${info.opts[ans]}</div>
+          </div>
+        </div>
+      </div>`;
+    c.appendChild(div);
+  }
+}
+
+function recalcTotals() {
+  const a  = parseInt(document.getElementById('g-a-pts').textContent) || 0;
+  const b1 = clamp(document.getElementById('sc-b1').value, 5);
+  const b2 = clamp(document.getElementById('sc-b2').value, 5);
+  const bT = b1 + b2;
+  document.getElementById('g-b-pts').textContent = bT;
+  document.getElementById('total-score').textContent = (a + bT) + ' / 20';
+  document.getElementById('total-breakdown').textContent = `A: ${a} · B: ${bT}`;
+}
+function clamp(v, max) { return Math.min(Math.max(parseInt(v)||0, 0), max); }
+
+function showStudentResults() {
+  document.getElementById('grading-screen').style.display  = 'none';
+  document.getElementById('results-screen').style.display  = 'block';
+  window.scrollTo(0, 0);
+}
+
+function openModal() {
+  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('pw').value = '';
+  document.getElementById('modal-err').textContent = '';
+  setTimeout(() => document.getElementById('pw').focus(), 50);
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal'))
+    document.getElementById('modal').style.display = 'none';
+}
+function checkPw() {
+  if (document.getElementById('pw').value === PASSWORD) {
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('results-screen').style.display  = 'none';
+    document.getElementById('grading-screen').style.display  = 'block';
+    recalcTotals();
+    window.scrollTo(0, 0);
+  } else {
+    document.getElementById('modal-err').textContent = 'Incorrect password. Try again.';
+    document.getElementById('pw').value = '';
+    document.getElementById('pw').focus();
+  }
+}
+
+['b1','b2'].forEach(id => document.getElementById(id)?.addEventListener('input', saveState));
+loadState();
+</script>
+</body>
+</html>

@@ -115,6 +115,25 @@
   .cl-section-label:first-child { margin-top: 0; }
   .nav-back { font-size: 13px; color: var(--color-text2); text-decoration: none; flex-shrink: 0; }
   .nav-back:hover { color: var(--color-text); }
+  .btn-submit-ex { font-family:var(--font-sans); font-size:13px; font-weight:500; padding:9px 20px; background:var(--color-text); color:var(--color-bg); border:none; border-radius:var(--radius-md); cursor:pointer; margin-top:16px; }
+  .sq-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:300; }
+  .sq-box { background:var(--color-bg); border-radius:var(--radius-lg); padding:28px; width:min(540px,92vw); max-height:85vh; overflow-y:auto; }
+  .sq-box h3 { font-size:16px; font-weight:600; margin-bottom:4px; }
+  .sq-sub { font-size:13px; color:var(--color-text2); margin-bottom:18px; }
+  .sq-section { margin-bottom:14px; }
+  .sq-section-label { font-size:10px; font-weight:600; color:var(--color-text3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+  .sq-item { display:flex; align-items:flex-start; gap:10px; font-size:13px; padding:6px 0; border-bottom:0.5px solid var(--color-border); }
+  .sq-item:last-child { border-bottom:none; }
+  .sq-pts { font-size:11px; font-weight:600; padding:2px 7px; border-radius:5px; white-space:nowrap; }
+  .sq-pts.earned  { background:var(--color-success-bg); color:var(--color-success-text); }
+  .sq-pts.missing { background:var(--color-bg3); color:var(--color-text3); }
+  .sq-total { font-size:28px; font-weight:700; text-align:center; margin:16px 0 8px; font-variant-numeric:tabular-nums; }
+  .sq-pw-input { font-family:var(--font-sans); font-size:14px; width:100%; padding:8px 12px; border:0.5px solid var(--color-border2); border-radius:8px; background:var(--color-bg); color:var(--color-text); margin-bottom:8px; }
+  .sq-pw-input:focus { outline:none; border-color:var(--color-info-border); }
+  .sq-pw-err { font-size:12px; color:var(--color-danger-text,#a32d2d); min-height:16px; margin-bottom:6px; }
+  .sq-btns { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  .sq-btns button { font-family:var(--font-sans); font-size:13px; padding:7px 14px; border-radius:8px; cursor:pointer; border:0.5px solid var(--color-border); background:var(--color-bg2); color:var(--color-text); }
+  .sq-btn-confirm { background:var(--color-text) !important; color:var(--color-bg) !important; border-color:transparent !important; }
 </style>
 </head>
 <body>
@@ -325,6 +344,9 @@
       <label><input type="checkbox" value="2" onchange="recalc()"> Code is efficient — no unnecessary repeated blocks</label>
     </div>
   </div>
+  <div style="text-align:right;margin-top:12px">
+    <button class="btn-submit-ex" onclick="submitExercise()">Submit for Grading →</button>
+  </div>
 </div>
 
 <script>
@@ -374,7 +396,91 @@ function recalc() {
   else { lbl.textContent = 'Keep going'; lbl.className = 'badge b-gray'; }
   saveChecklist();
 }
+const CL_SECTIONS = [
+  { label: 'Algorithm (up to 10 pts)', items: [
+    { text: 'Uses if/else to make at least one decision based on player input', pts: 3 },
+    { text: 'Uses a variable to track something (score, guesses, etc.)', pts: 3 },
+    { text: 'Program logic is correct — the right things happen at the right time', pts: 4 }
+  ]},
+  { label: 'Working program (up to 10 pts)', items: [
+    { text: 'Program runs without crashing when green flag is clicked', pts: 4 },
+    { text: 'All required outputs appear (correct messages/responses)', pts: 3 },
+    { text: 'Program handles all cases (not just one branch of an if/else)', pts: 3 }
+  ]},
+  { label: 'Precision (up to 5 pts)', items: [
+    { text: 'Messages are spelled correctly and make sense', pts: 2 },
+    { text: 'Edge cases handled (e.g. exactly 0, exactly 100, score = 30)', pts: 3 }
+  ]},
+  { label: 'Creativity & efficiency (up to 5 pts)', items: [
+    { text: 'Backdrop or costume changes add to the experience', pts: 2 },
+    { text: 'Sound or music is included', pts: 1 },
+    { text: 'Code is efficient — no unnecessary repeated blocks', pts: 2 }
+  ]}
+];
+function submitExercise() {
+  const cbs = Array.from(document.querySelectorAll('.checklist input[type=checkbox]'));
+  let cbIdx = 0, totalEarned = 0, totalMax = 0;
+  const overlay = document.getElementById('sq-overlay');
+  const body = document.getElementById('sq-body');
+  body.innerHTML = '';
+  CL_SECTIONS.forEach(sec => {
+    const secDiv = document.createElement('div');
+    secDiv.className = 'sq-section';
+    secDiv.innerHTML = `<div class="sq-section-label">${sec.label}</div>`;
+    sec.items.forEach(item => {
+      const checked = cbs[cbIdx] ? cbs[cbIdx].checked : false;
+      cbIdx++;
+      totalMax += item.pts;
+      if (checked) totalEarned += item.pts;
+      const row = document.createElement('div');
+      row.className = 'sq-item';
+      row.innerHTML = `<span class="sq-pts ${checked?'earned':'missing'}">${checked?'+'+item.pts+' ✓':'0'}</span><span>${item.text}</span>`;
+      secDiv.appendChild(row);
+    });
+    body.appendChild(secDiv);
+  });
+  document.getElementById('sq-total').textContent = totalEarned + ' / ' + totalMax;
+  document.getElementById('sq-confirmed-score').textContent = totalEarned + ' / ' + totalMax;
+  document.getElementById('sq-pw-section').style.display = 'block';
+  document.getElementById('sq-confirmed').style.display = 'none';
+  document.getElementById('sq-pw').value = '';
+  document.getElementById('sq-pw-err').textContent = '';
+  overlay.style.display = 'flex';
+}
+function closeSqOverlay() { document.getElementById('sq-overlay').style.display = 'none'; }
+function checkSqPw() {
+  if (document.getElementById('sq-pw').value === 'icompute2026') {
+    document.getElementById('sq-pw-section').style.display = 'none';
+    document.getElementById('sq-confirmed').style.display = 'block';
+  } else {
+    document.getElementById('sq-pw-err').textContent = 'Incorrect password.';
+    document.getElementById('sq-pw').value = '';
+    document.getElementById('sq-pw').focus();
+  }
+}
 loadChecklist();
 </script>
+
+<div id="sq-overlay" class="sq-overlay" style="display:none" onclick="if(event.target===this)closeSqOverlay()">
+  <div class="sq-box" onclick="event.stopPropagation()">
+    <h3>Exercise Submission</h3>
+    <div class="sq-sub">Scratch Logic &amp; Decisions — self-assessment checklist</div>
+    <div id="sq-body"></div>
+    <div class="sq-total" id="sq-total">0 / 30</div>
+    <div id="sq-pw-section">
+      <div style="background:var(--color-warning-bg);border:0.5px solid var(--color-warning-border);border-radius:8px;padding:12px;font-size:12px;color:var(--color-warning-text);margin-bottom:12px">Coach: enter the grading password to confirm this submission.</div>
+      <div class="sq-pw-err" id="sq-pw-err"></div>
+      <input class="sq-pw-input" type="password" id="sq-pw" placeholder="Grading password" onkeydown="if(event.key==='Enter')checkSqPw()">
+      <div class="sq-btns">
+        <button onclick="closeSqOverlay()">Close</button>
+        <button class="sq-btn-confirm" onclick="checkSqPw()">Unlock Grading</button>
+      </div>
+    </div>
+    <div id="sq-confirmed" style="display:none">
+      <div style="background:var(--color-success-bg);border:0.5px solid var(--color-success-border);border-radius:8px;padding:12px;font-size:12px;color:var(--color-success-text)">✓ Submission confirmed by coach. Score: <strong id="sq-confirmed-score"></strong></div>
+      <div class="sq-btns"><button onclick="closeSqOverlay()">Close</button></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
