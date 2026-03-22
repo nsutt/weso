@@ -509,11 +509,7 @@ function submitQuiz() {
         <span class="${ok?'correct-tag':'wrong-tag'}">${ok?'+2 ✓':'0 ✗'}</span>
       </div>
       <div class="r-card-body">
-        <div class="r-card-body-grid">
-          <div><strong>Your answer:</strong><br>${got ? got.toUpperCase()+'. '+info.opts[got] : '<em style="color:var(--text3)">not answered</em>'}</div>
-          <div><strong>Correct answer:</strong><br><span class="correct-tag">${ans.toUpperCase()}. ${info.opts[ans]}</span></div>
-        </div>
-        <div class="r-explain">${EXPLAIN[i]}</div>
+        <strong>Your answer:</strong> ${got ? got.toUpperCase()+'. '+info.opts[got] : '<em style="color:var(--text3)">not answered</em>'}
       </div>`;
     aC.appendChild(div);
   }
