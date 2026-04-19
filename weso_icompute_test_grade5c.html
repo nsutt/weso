@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCompute — Grade 5 Practice Test 3</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#fff; --bg2:#f7f7f5; --bg3:#efefed;
+  --text:#1a1a18; --text2:#5a5a56; --text3:#888780;
+  --border:rgba(0,0,0,.12); --border2:rgba(0,0,0,.22);
+  --green-bg:#eaf3de; --green-text:#3b6d11; --green-border:#c0dd97;
+  --red-bg:#fcebeb; --red-text:#a32d2d; --red-border:#f7c1c1;
+  --amber-bg:#faeeda; --amber-text:#854f0b; --amber-border:#fac775;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"SFMono-Regular",Consolas,monospace;
+  --r:10px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1e1e1c; --bg2:#2a2a28; --bg3:#333331;
+    --text:#e8e6de; --text2:#9c9a92; --text3:#6e6c66;
+    --border:rgba(255,255,255,.1); --border2:rgba(255,255,255,.2);
+    --green-bg:#173404; --green-text:#97c459; --green-border:#27500a;
+    --red-bg:#501313; --red-text:#f09595; --red-border:#791f1f;
+    --amber-bg:#412402; --amber-text:#ef9f27; --amber-border:#633806;
+  }
+}
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; }
+
+#start-screen { max-width:540px; margin:0 auto; padding:60px 24px; text-align:center; }
+.ev-badge { display:inline-block; font-size:11px; font-weight:500; padding:3px 12px; border-radius:20px; background:var(--green-bg); color:var(--green-text); letter-spacing:.07em; text-transform:uppercase; margin-bottom:20px; }
+.start-title { font-size:clamp(26px,5vw,38px); font-weight:600; line-height:1.2; margin-bottom:8px; }
+.start-sub { font-size:14px; color:var(--text2); line-height:1.7; margin-bottom:28px; }
+.info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:28px; }
+.info-cell { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:14px 8px; }
+.info-num { font-size:22px; font-weight:700; margin-bottom:2px; }
+.info-lbl { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; }
+.field-label { font-size:12px; color:var(--text2); display:block; margin-bottom:5px; text-align:left; }
+.text-input { font-family:var(--font); font-size:14px; width:100%; padding:9px 12px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg); color:var(--text); margin-bottom:20px; }
+.text-input:focus { outline:none; border-color:var(--green-border); }
+.instr-box { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:16px 20px; text-align:left; margin-bottom:24px; }
+.instr-box h3 { font-size:13px; font-weight:600; margin-bottom:8px; }
+.instr-box li { font-size:13px; color:var(--text2); line-height:1.7; padding-left:4px; }
+.btn-primary { font-family:var(--font); font-size:15px; font-weight:500; padding:13px 24px; background:var(--text); color:var(--bg); border:none; border-radius:var(--r); cursor:pointer; width:100%; transition:opacity .15s; }
+.btn-primary:hover { opacity:.85; }
+
+#test-header { position:sticky; top:0; z-index:100; background:var(--bg); border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:10px 24px; gap:12px; }
+.hdr-title { font-weight:600; font-size:14px; }
+.hdr-name { color:var(--text2); font-size:12px; }
+#timer { font-family:var(--mono); font-size:20px; font-weight:700; padding:6px 18px; border-radius:8px; background:var(--green-bg); color:var(--green-text); min-width:88px; text-align:center; transition:background .3s,color .3s; }
+#timer.warn   { background:var(--amber-bg); color:var(--amber-text); }
+#timer.urgent { background:var(--red-bg);   color:var(--red-text); }
+.hdr-pts { font-size:12px; color:var(--text2); }
+
+#test-body { max-width:740px; margin:0 auto; padding:32px 24px 80px; }
+.sec-block { margin-bottom:48px; }
+.sec-head { display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:8px; }
+.sec-head h2 { font-size:17px; font-weight:600; }
+.sec-pts { font-size:11px; font-weight:500; padding:2px 9px; border-radius:10px; background:var(--green-bg); color:var(--green-text); }
+.sec-desc { font-size:13px; color:var(--text2); margin-bottom:18px; margin-top:8px; line-height:1.6; }
+
+.q-card { border:0.5px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:12px; }
+.q-num { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+.q-text { font-size:14px; font-weight:500; color:var(--text); margin-bottom:12px; line-height:1.5; }
+.opts { display:flex; flex-direction:column; gap:6px; }
+.opt { font-family:var(--font); font-size:13px; text-align:left; padding:8px 14px; border:0.5px solid var(--border2); border-radius:8px; background:transparent; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:10px; transition:background .1s,border-color .1s; }
+.opt:hover:not(.sel) { background:var(--bg2); }
+.opt.sel { background:var(--green-bg); border-color:var(--green-border); color:var(--green-text); }
+.opt-ltr { font-size:11px; font-weight:600; color:var(--text3); width:14px; flex-shrink:0; }
+.opt.sel .opt-ltr { color:var(--green-text); }
+
+.sa-card { border:0.5px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:12px; }
+.sa-text { font-size:14px; color:var(--text); line-height:1.7; margin-bottom:4px; }
+.sa-part { margin-top:14px; padding-top:12px; border-top:0.5px solid var(--border); }
+.sa-part-lbl { font-size:11px; font-weight:600; color:var(--text2); margin-bottom:6px; }
+textarea { font-family:var(--font); font-size:13px; width:100%; min-height:78px; padding:10px 12px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg2); color:var(--text); resize:vertical; line-height:1.6; }
+textarea:focus { outline:none; border-color:var(--green-border); background:var(--bg); }
+.pseudo { background:var(--bg2); border-radius:8px; padding:12px 16px; font-family:var(--mono); font-size:12px; color:var(--text2); line-height:1.9; margin:10px 0; overflow-x:auto; white-space:pre; }
+
+.task-card { border:0.5px solid var(--border); border-radius:var(--r); overflow:hidden; }
+.task-head { background:var(--bg2); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:0.5px solid var(--border); }
+.task-head-title { font-size:13px; font-weight:600; }
+.task-body { padding:20px; }
+.task-intro { font-size:14px; color:var(--text2); line-height:1.7; margin-bottom:18px; }
+.step { display:grid; grid-template-columns:28px 1fr; gap:0 12px; margin-bottom:12px; align-items:start; }
+.step-n { width:28px; height:28px; border-radius:50%; background:var(--green-bg); color:var(--green-text); font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.step-t { font-size:14px; color:var(--text2); line-height:1.7; padding-top:4px; }
+.step-t strong { color:var(--text); font-weight:500; }
+.step-t ul { margin-top:6px; padding-left:18px; }
+.step-t li { margin-bottom:4px; }
+.sprite-block { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:14px 18px; margin:10px 0 4px; }
+.sprite-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-bottom:8px; }
+.sprite-block ul { padding-left:18px; }
+.sprite-block li { font-size:13px; color:var(--text2); line-height:1.8; }
+.sprite-block li strong { color:var(--text); font-weight:500; }
+.rubric-mini { background:var(--bg2); border-radius:8px; padding:12px 16px; margin-top:16px; font-size:12px; }
+.rubric-mini-head { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; padding-bottom:8px; border-bottom:0.5px solid var(--border2); margin-bottom:8px; }
+.rubric-row-mini { display:grid; grid-template-columns:1fr auto; gap:4px; padding:3px 0; }
+.rubric-row-mini span { color:var(--text2); }
+.rubric-row-mini .rpts { font-weight:600; color:var(--text); text-align:right; }
+.scratch-confirm { margin-top:16px; display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg2); border-radius:8px; font-size:13px; color:var(--text2); cursor:pointer; border:0.5px solid var(--border); }
+.scratch-confirm input { width:16px; height:16px; flex-shrink:0; cursor:pointer; }
+.scratch-confirm.checked { background:var(--green-bg); color:var(--green-text); border-color:var(--green-border); }
+
+.submit-area { text-align:center; padding:32px 0; border-top:0.5px solid var(--border); }
+.submit-note { font-size:13px; color:var(--text2); margin-bottom:16px; }
+.btn-submit { font-family:var(--font); font-size:14px; font-weight:500; padding:12px 40px; background:var(--text); color:var(--bg); border:none; border-radius:var(--r); cursor:pointer; transition:opacity .15s; }
+.btn-submit:hover { opacity:.85; }
+
+#results-screen { max-width:740px; margin:0 auto; padding:32px 24px; display:none; }
+.res-hero { text-align:center; padding:28px 0; border-bottom:0.5px solid var(--border); margin-bottom:28px; }
+.res-hero h2 { font-size:22px; font-weight:600; margin-bottom:4px; }
+.score-sub { font-size:13px; color:var(--text2); }
+.res-sec { margin-bottom:28px; }
+.res-sec h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
+.r-card { border:0.5px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:10px; }
+.r-card-head { background:var(--bg2); padding:9px 14px; font-size:13px; display:flex; justify-content:space-between; align-items:center; border-bottom:0.5px solid var(--border); }
+.r-card-body { padding:12px 14px; font-size:13px; color:var(--text2); line-height:1.6; }
+.correct-tag { color:var(--green-text); font-weight:500; }
+.wrong-tag { color:var(--red-text); font-weight:500; }
+.btn-outline { font-family:var(--font); font-size:14px; font-weight:500; padding:11px 28px; border:0.5px solid var(--border2); border-radius:var(--r); background:transparent; color:var(--text); cursor:pointer; transition:background .12s; }
+.btn-outline:hover { background:var(--bg2); }
+.res-footer { text-align:center; padding:28px 0; border-top:0.5px solid var(--border); }
+.res-footer p { font-size:13px; color:var(--text2); margin-bottom:14px; }
+
+#grading-screen { max-width:740px; margin:0 auto; padding:32px 24px 80px; display:none; }
+.grade-header { display:flex; align-items:center; gap:12px; margin-bottom:28px; padding-bottom:14px; border-bottom:0.5px solid var(--border); }
+.grade-badge { font-size:10px; font-weight:600; padding:3px 10px; border-radius:10px; background:var(--amber-bg); color:var(--amber-text); letter-spacing:.07em; text-transform:uppercase; }
+.grade-header h2 { font-size:20px; font-weight:600; }
+.grade-header-sub { font-size:13px; color:var(--text2); margin-top:2px; }
+.g-sec { margin-bottom:40px; }
+.g-sec-head { font-size:15px; font-weight:600; padding-bottom:10px; border-bottom:0.5px solid var(--border); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
+.g-sec-pts { font-size:13px; color:var(--text2); font-weight:400; }
+.g-card { border:0.5px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:12px; }
+.g-card-head { background:var(--bg2); padding:10px 16px; font-size:13px; font-weight:500; display:flex; justify-content:space-between; border-bottom:0.5px solid var(--border); }
+.g-card-head span:last-child { font-size:12px; color:var(--text3); font-weight:400; }
+.g-card-body { padding:16px; }
+.g-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.g-field label { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; display:block; margin-bottom:4px; }
+.g-val { font-size:13px; color:var(--text2); background:var(--bg2); padding:8px 12px; border-radius:8px; border:0.5px solid var(--border); min-height:36px; line-height:1.5; white-space:pre-wrap; }
+.g-val.iscorrect { background:var(--green-bg); color:var(--green-text); border-color:var(--green-border); }
+.g-val.iswrong   { background:var(--red-bg);   color:var(--red-text);   border-color:var(--red-border); }
+.model { background:var(--bg2); border-radius:8px; padding:12px 14px; font-size:13px; color:var(--text2); line-height:1.7; }
+.model strong { color:var(--text); }
+.model em { font-size:12px; color:var(--text3); }
+.score-row { display:flex; align-items:center; gap:10px; padding-top:14px; margin-top:14px; border-top:0.5px solid var(--border); }
+.score-row label { font-size:13px; color:var(--text2); flex:1; }
+.score-inp { font-family:var(--mono); font-size:15px; font-weight:600; width:58px; text-align:center; padding:6px 8px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg); color:var(--text); }
+.score-inp:focus { outline:none; border-color:var(--green-border); }
+.score-max { font-size:13px; color:var(--text3); }
+.rubric-tbl { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:14px; }
+.rubric-tbl th { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); text-align:left; padding:0 12px 8px; border-bottom:0.5px solid var(--border2); }
+.rubric-tbl td { padding:10px 12px; color:var(--text2); border-bottom:0.5px solid var(--border); vertical-align:top; line-height:1.5; }
+.rubric-tbl tr:last-child td { border-bottom:none; }
+.rubric-tbl td:nth-child(2) { font-weight:600; color:var(--text); white-space:nowrap; font-family:var(--mono); }
+.score-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
+.total-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:20px 24px; display:flex; align-items:center; justify-content:space-between; margin-top:28px; }
+.total-lbl { font-size:15px; font-weight:600; }
+.total-breakdown { font-size:12px; color:var(--text2); margin-top:2px; }
+.total-score { font-size:38px; font-weight:700; font-family:var(--mono); }
+.back-btn { font-family:var(--font); font-size:13px; color:var(--text2); background:none; border:none; cursor:pointer; padding:0; margin-bottom:20px; display:inline-block; }
+.back-btn:hover { color:var(--text); }
+
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:200; }
+.modal { background:var(--bg); border:0.5px solid var(--border); border-radius:14px; padding:28px 32px; width:340px; }
+.modal h3 { font-size:16px; font-weight:600; margin-bottom:6px; }
+.modal p { font-size:13px; color:var(--text2); margin-bottom:16px; line-height:1.5; }
+.modal-err { font-size:12px; color:var(--red-text); min-height:16px; margin-bottom:8px; }
+.pw-input { font-family:var(--font); font-size:14px; width:100%; padding:10px 12px; border:0.5px solid var(--border2); border-radius:8px; background:var(--bg2); color:var(--text); margin-bottom:12px; }
+.pw-input:focus { outline:none; border-color:var(--green-border); }
+.modal-btns { display:flex; gap:8px; }
+.modal-btns button { font-family:var(--font); font-size:13px; padding:8px 18px; border-radius:8px; cursor:pointer; border:0.5px solid var(--border2); background:transparent; color:var(--text); }
+.modal-btns .btn-confirm { background:var(--text); color:var(--bg); border-color:transparent; flex:1; }
+
+.resume-notice { background:var(--amber-bg); border:0.5px solid var(--amber-border); border-radius:var(--r); padding:14px 18px; margin-bottom:16px; text-align:left; }
+.resume-notice p { font-size:13px; color:var(--amber-text); font-weight:500; margin-bottom:10px; }
+.resume-notice-btns { display:flex; gap:8px; }
+.btn-resume { font-family:var(--font); font-size:13px; font-weight:500; padding:9px 18px; background:var(--text); color:var(--bg); border:none; border-radius:8px; cursor:pointer; flex:1; }
+.btn-fresh  { font-family:var(--font); font-size:13px; padding:9px 14px; border:0.5px solid var(--amber-border); border-radius:8px; background:transparent; color:var(--amber-text); cursor:pointer; }
+.btn-reset { font-family:var(--font); font-size:11px; color:var(--text3); background:none; border:0.5px solid var(--border); border-radius:6px; padding:4px 10px; cursor:pointer; white-space:nowrap; }
+.btn-reset:hover { color:var(--red-text); border-color:var(--red-border); }
+@media(max-width:560px){
+  #test-header { padding:10px 16px; }
+  #test-body, #results-screen, #grading-screen { padding-left:16px; padding-right:16px; }
+  .g-row, .score-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ START ══════════════════════════════════════════════════ -->
+<div id="start-screen">
+  <div class="ev-badge">WESO 2026 · iCompute · Challenge</div>
+  <h1 class="start-title">Grade 5<br>Practice Test 3</h1>
+  <p class="start-sub">The hardest Grade 5 practice test. Binary addition, complex loop tracing, and a two-sprite catching game in Scratch that requires coordinating separate scripts.</p>
+  <div class="info-grid">
+    <div class="info-cell"><div class="info-num">55</div><div class="info-lbl">minutes</div></div>
+    <div class="info-cell"><div class="info-num">54</div><div class="info-lbl">points</div></div>
+    <div class="info-cell"><div class="info-num">3</div><div class="info-lbl">sections</div></div>
+  </div>
+  <label class="field-label">Student name(s)</label>
+  <input class="text-input" type="text" id="student-name" placeholder="e.g. Alex &amp; Jordan">
+  <div class="instr-box">
+    <h3>Before you begin</h3>
+    <ul>
+      <li>Section A &amp; B: answer on this page (in the real test, these are on paper).</li>
+      <li>Section C: open <strong>Scratch 3.29 desktop</strong>, build your game, then come back here.</li>
+      <li>No internet, calculators, or notes allowed.</li>
+      <li>The timer starts the moment you click Begin.</li>
+    </ul>
+  </div>
+  <div class="resume-notice" id="resume-notice" style="display:none">
+    <p>↩ Saved progress found for <strong id="saved-name-display"></strong></p>
+    <div class="resume-notice-btns">
+      <button class="btn-resume" onclick="resumeTest()">Resume Test</button>
+      <button class="btn-fresh" onclick="startFresh()">Start Fresh</button>
+    </div>
+  </div>
+  <button class="btn-primary" id="begin-btn" onclick="startTest()">Begin Test →</button>
+</div>
+
+<!-- ══ HEADER ═════════════════════════════════════════════════ -->
+<div id="test-header" style="display:none">
+  <div>
+    <div class="hdr-title">iCompute — Grade 5 · Test 3</div>
+    <div class="hdr-name" id="hdr-name"></div>
+  </div>
+  <div id="timer">55:00</div>
+  <div class="hdr-pts">54 pts total</div>
+  <button class="btn-reset" onclick="clearAndReset()">↺ Reset</button>
+</div>
+
+<!-- ══ TEST BODY ══════════════════════════════════════════════ -->
+<div id="test-body" style="display:none">
+
+  <!-- SECTION A -->
+  <div class="sec-block">
+    <div class="sec-head"><h2>Section A</h2><span class="sec-pts">14 pts · 2 pts each</span></div>
+    <p class="sec-desc">Multiple choice — select the <strong>one best answer</strong> for each question.</p>
+
+    <div class="q-card" id="qa-1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">What is the result of adding the binary numbers <strong>0101</strong> and <strong>0011</strong>? (Hint: 0101 = 5 and 0011 = 3.)</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(1,'a')"><span class="opt-ltr">A</span>1000</button>
+        <button class="opt" onclick="pick(1,'b')"><span class="opt-ltr">B</span>1010</button>
+        <button class="opt" onclick="pick(1,'c')"><span class="opt-ltr">C</span>0111</button>
+        <button class="opt" onclick="pick(1,'d')"><span class="opt-ltr">D</span>1100</button>
+      </div>
+    </div>
+
+    <div class="q-card" id="qa-2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">A Scratch program runs: <em>set x to 1 / repeat until x &gt; 15: change x by 4</em>. What is the value of x when the loop ends?</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(2,'a')"><span class="opt-ltr">A</span>13</button>
+        <button class="opt" onclick="pick(2,'b')"><span class="opt-ltr">B</span>15</button>
+        <button class="opt" onclick="pick(2,'c')"><span class="opt-ltr">C</span>17</button>
+        <button class="opt" onclick="pick(2,'d')"><span class="opt-ltr">D</span>16</button>
+      </div>
+    </div>
+
+    <div class="q-card" id="qa-3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">What does <strong>debugging</strong> mean in programming?</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(3,'a')"><span class="opt-ltr">A</span>Speeding up a slow program</button>
+        <button class="opt" onclick="pick(3,'b')"><span class="opt-ltr">B</span>Adding more features to code</button>
+        <button class="opt" onclick="pick(3,'c')"><span class="opt-ltr">C</span>Finding and fixing errors in a program</button>
+        <button class="opt" onclick="pick(3,'d')"><span class="opt-ltr">D</span>Deleting old unused files</button>
+      </div>
+    </div>
+
+    <div class="q-card" id="qa-4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">In Scratch, what does the <strong>join</strong> block do?</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(4,'a')"><span class="opt-ltr">A</span>Connects two sprites together on the stage</button>
+        <button class="opt" onclick="pick(4,'b')"><span class="opt-ltr">B</span>Combines two pieces of text or values into a single message</button>
+        <button class="opt" onclick="pick(4,'c')"><span class="opt-ltr">C</span>Starts a loop inside another loop</button>
+        <button class="opt" onclick="pick(4,'d')"><span class="opt-ltr">D</span>Sends a broadcast message to another sprite</button>
+      </div>
+    </div>
+
+    <div class="q-card" id="qa-5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">In programming, what is a <strong>nested loop</strong>?</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(5,'a')"><span class="opt-ltr">A</span>A loop that runs backwards from a high number to zero</button>
+        <button class="opt" onclick="pick(5,'b')"><span class="opt-ltr">B</span>A loop that only ever runs once</button>
+        <button class="opt" onclick="pick(5,'c')"><span class="opt-ltr">C</span>A loop placed inside another loop</button>
+        <button class="opt" onclick="pick(5,'d')"><span class="opt-ltr">D</span>A loop that checks its condition at the start before running</button>
+      </div>
+    </div>
+
+    <div class="q-card" id="qa-6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">What happens when a program has an <strong>infinite loop</strong>?</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(6,'a')"><span class="opt-ltr">A</span>The loop runs exactly once and then stops</button>
+        <button class="opt" onclick="pick(6,'b')"><span class="opt-ltr">B</span>The loop runs a set number of times and then stops</button>
+        <button class="opt" onclick="pick(6,'c')"><span class="opt-ltr">C</span>The loop never stops running</button>
+        <button class="opt" onclick="pick(6,'d')"><span class="opt-ltr">D</span>The loop runs backwards</button>
+      </div>
+    </div>
+
+    <div class="q-card" id="qa-7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">A sprite's <strong>score</strong> variable starts at 0. Inside a <em>repeat 6 times</em> loop, the program runs <em>change score by 3</em> each time. What is the final value of score?</div>
+      <div class="opts">
+        <button class="opt" onclick="pick(7,'a')"><span class="opt-ltr">A</span>3</button>
+        <button class="opt" onclick="pick(7,'b')"><span class="opt-ltr">B</span>9</button>
+        <button class="opt" onclick="pick(7,'c')"><span class="opt-ltr">C</span>15</button>
+        <button class="opt" onclick="pick(7,'d')"><span class="opt-ltr">D</span>18</button>
+      </div>
+    </div>
+  </div><!-- /sec A -->
+
+  <!-- SECTION B -->
+  <div class="sec-block">
+    <div class="sec-head"><h2>Section B</h2><span class="sec-pts">10 pts · 5 pts each</span></div>
+    <p class="sec-desc">Short answer — show your work and write complete sentences where asked.</p>
+
+    <div class="sa-card">
+      <div class="q-num">Question 1 — Binary conversion (5 pts)</div>
+      <div class="sa-text">Convert the decimal number <strong>53</strong> to binary.</div>
+      <div class="sa-part">
+        <div class="sa-part-lbl">Part a — Show all of your division steps. (3 pts)</div>
+        <textarea id="b1a"></textarea>
+      </div>
+      <div class="sa-part">
+        <div class="sa-part-lbl">Part b — Write the final binary answer and circle it (or put a box around it). (2 pts)</div>
+        <textarea id="b1b" style="min-height:52px"></textarea>
+      </div>
+    </div>
+
+    <div class="sa-card">
+      <div class="q-num">Question 2 — Algorithm trace (5 pts)</div>
+      <div class="sa-text">Study the pseudocode below, then answer the questions.</div>
+      <div class="pseudo">Set score to 0
+Set round to 0
+
+Repeat 3 times:
+    Change round by 1
+    Ask "Enter a number:"
+    If answer &gt; 4 then:
+        Change score by answer
+
+If score &gt; 20 then:
+    Print "High scorer! Total: " + score
+Else if score &gt; 10 then:
+    Print "Good effort. Total: " + score
+Else:
+    Print "Keep trying. Total: " + score</div>
+      <div class="sa-part">
+        <div class="sa-part-lbl">Part a — In 2–3 sentences, explain what this algorithm does. (3 pts)</div>
+        <textarea id="b2a"></textarea>
+      </div>
+      <div class="sa-part">
+        <div class="sa-part-lbl">Part b — The three numbers entered are 6, 2, and 9. What does the algorithm print? Show your step-by-step work. (2 pts)</div>
+        <textarea id="b2b"></textarea>
+      </div>
+    </div>
+  </div><!-- /sec B -->
+
+  <!-- SECTION C -->
+  <div class="sec-block">
+    <div class="sec-head"><h2>Section C</h2><span class="sec-pts">30 pts</span></div>
+    <p class="sec-desc">Open <strong>Scratch 3.29 (desktop app)</strong> and build the game below. This task uses <strong>two sprites</strong> with separate scripts. Return here when finished and check the box.</p>
+
+    <div class="task-card">
+      <div class="task-head">
+        <div class="task-head-title">Programming Task — Star Catcher Game</div>
+        <span style="font-size:12px;color:var(--text3)">Scratch 3.29 offline · 2 sprites</span>
+      </div>
+      <div class="task-body">
+        <p class="task-intro">Build a game where the player moves a catcher sprite left and right to catch falling stars. The game ends when the player misses 3 stars. You will need <strong>two sprites</strong> — a Catcher and a Star — each with their own scripts.</p>
+
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-t"><strong>Create two variables</strong> (both visible on stage): <strong>score</strong> (set to 0) and <strong>misses</strong> (set to 0).</div>
+        </div>
+
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-t"><strong>Catcher sprite</strong> — add these scripts so the player can move it:
+            <div class="sprite-block">
+              <div class="sprite-label">Catcher scripts</div>
+              <ul>
+                <li>When <strong>right arrow</strong> key pressed → change x by <strong>15</strong></li>
+                <li>When <strong>left arrow</strong> key pressed → change x by <strong>−15</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-t"><strong>Star sprite</strong> — add a script that starts when the green flag is clicked:
+            <div class="sprite-block">
+              <div class="sprite-label">Star script</div>
+              <ul>
+                <li>Set position to x: <strong>pick random −200 to 200</strong>, y: <strong>170</strong></li>
+                <li>Start a <strong>forever</strong> loop:</li>
+                <li style="list-style:none;padding-left:16px">— Change y by <strong>−8</strong> (star falls down)</li>
+                <li style="list-style:none;padding-left:16px">— If touching <strong>Catcher</strong>: change score by 1 → play a sound → go to x: pick random −200 to 200, y: 170</li>
+                <li style="list-style:none;padding-left:16px">— If y &lt; <strong>−160</strong> (hit the floor): change misses by 1 →
+                  <ul style="padding-left:16px;margin-top:4px">
+                    <li>If misses = 3: say (join <strong>"Game Over! Score: "</strong> score) for 3 seconds → <strong>stop all</strong></li>
+                    <li>Else: go to x: pick random −200 to 200, y: 170</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-t">Add a <strong>backdrop</strong> to the stage. Optionally, add a <strong>costume change</strong> on the Catcher or Star when a catch is made.</div>
+        </div>
+
+        <div class="rubric-mini">
+          <div class="rubric-mini-head">Scoring rubric — 30 pts total</div>
+          <div class="rubric-row-mini"><span>Correct algorithm (catcher moves with arrow keys; star falls in forever loop; collision detection; misses increments on floor; game stops at misses = 3)</span><span class="rpts">10 pts</span></div>
+          <div class="rubric-row-mini"><span>Working game (catcher moves, star falls and resets, score goes up on catch, game ends correctly at 3 misses)</span><span class="rpts">10 pts</span></div>
+          <div class="rubric-row-mini"><span>Precision (score and misses both visible; join used in game-over message; star resets to random x each time; stop all used at game over)</span><span class="rpts">5 pts</span></div>
+          <div class="rubric-row-mini"><span>Creativity &amp; efficiency — tiebreaker (sound on catch, backdrop, costumes, increasing speed or other enhancements)</span><span class="rpts">5 pts</span></div>
+        </div>
+
+        <label class="scratch-confirm" id="scratch-lbl">
+          <input type="checkbox" id="scratch-done" onchange="confirmScratch()">
+          <span id="scratch-lbl-text">I finished my Scratch game and saved it on this computer.</span>
+        </label>
+      </div>
+    </div>
+  </div><!-- /sec C -->
+
+  <div class="submit-area">
+    <p class="submit-note">Finished? Click Submit — you can still scroll back and change answers before you do.</p>
+    <button class="btn-submit" onclick="submitTest()">Submit Test</button>
+  </div>
+
+</div><!-- /test-body -->
+
+<!-- ══ RESULTS ════════════════════════════════════════════════ -->
+<div id="results-screen">
+  <div class="res-hero">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:4px" id="res-byline"></p>
+    <h2>Test Submitted</h2>
+    <div class="score-sub">Your coach will grade your test and give you your final score.</div>
+  </div>
+  <div class="res-sec">
+    <h3>Section A — Multiple Choice</h3>
+    <div id="res-a-cards"></div>
+  </div>
+  <div class="res-sec">
+    <h3>Section B — Your Written Answers</h3>
+    <div class="r-card">
+      <div class="r-card-head"><span>Q1: Binary conversion (53 decimal)</span></div>
+      <div class="r-card-body">
+        <strong>Part a — steps:</strong>
+        <div id="res-b1a" style="margin-top:4px;white-space:pre-wrap"></div>
+        <strong style="display:block;margin-top:10px">Part b — final answer:</strong>
+        <div id="res-b1b" style="margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-head"><span>Q2: Algorithm trace</span></div>
+      <div class="r-card-body">
+        <strong>Part a — explanation:</strong>
+        <div id="res-b2a" style="margin-top:4px;white-space:pre-wrap"></div>
+        <strong style="display:block;margin-top:10px">Part b — trace:</strong>
+        <div id="res-b2b" style="margin-top:4px;white-space:pre-wrap"></div>
+      </div>
+    </div>
+  </div>
+  <div class="res-sec">
+    <h3>Section C — Scratch Game</h3>
+    <div class="r-card">
+      <div class="r-card-head">
+        <span>Star Catcher Game</span>
+        <span id="res-c-status"></span>
+      </div>
+      <div class="r-card-body">Coach will play the Scratch game and grade it using the rubric in the grading panel.</div>
+    </div>
+  </div>
+  <div class="res-footer">
+    <p>Coach: enter the grading password to see model answers and record scores.</p>
+    <button class="btn-outline" onclick="openModal()">Grade This Test (Coach Only)</button>
+  </div>
+</div>
+
+<!-- ══ GRADING ════════════════════════════════════════════════ -->
+<div id="grading-screen">
+  <button class="back-btn" onclick="showResults()">← Back to results</button>
+  <div class="grade-header">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:3px">
+        <h2>Grading Panel</h2>
+        <span class="grade-badge">Coach Only</span>
+      </div>
+      <div class="grade-header-sub">iCompute 2026 · Grade 5 · Test 3 · <span id="grade-name"></span></div>
+    </div>
+  </div>
+
+  <div class="g-sec">
+    <div class="g-sec-head">Section A — Multiple Choice <span class="g-sec-pts">Auto-graded · <strong id="g-a-pts">0</strong> / 14 pts</span></div>
+    <div id="g-a-cards"></div>
+  </div>
+
+  <div class="g-sec">
+    <div class="g-sec-head">Section B — Short Answer <span class="g-sec-pts">Manual · <strong id="g-b-pts">0</strong> / 10 pts</span></div>
+
+    <div class="g-card">
+      <div class="g-card-head"><span>Q1 — Binary conversion (53 decimal)</span><span>5 pts</span></div>
+      <div class="g-card-body">
+        <div class="g-row">
+          <div class="g-field"><label>Student — Part a (steps)</label><div class="g-val" id="g-b1a"></div></div>
+          <div class="g-field"><label>Model answer — Part a (3 pts)</label>
+            <div class="model">
+              53 ÷ 2 = 26 R <strong>1</strong><br>
+              26 ÷ 2 = 13 R <strong>0</strong><br>
+              13 ÷ 2 = 6&nbsp; R <strong>1</strong><br>
+              6&nbsp; ÷ 2 = 3&nbsp; R <strong>0</strong><br>
+              3&nbsp; ÷ 2 = 1&nbsp; R <strong>1</strong><br>
+              1&nbsp; ÷ 2 = 0&nbsp; R <strong>1</strong><br>
+              Read remainders bottom to top: <strong>110101</strong><br><br>
+              <em>3 pts: all steps correct. 2 pts: minor arithmetic slip. 1 pt: right method, multiple errors.</em>
+            </div>
+          </div>
+        </div>
+        <div class="g-row">
+          <div class="g-field"><label>Student — Part b (final answer)</label><div class="g-val" id="g-b1b"></div></div>
+          <div class="g-field"><label>Model answer — Part b (2 pts)</label>
+            <div class="model"><strong>110101</strong> (= 32+16+4+1 = 53 ✓)<br><br><em>2 pts: correct. 1 pt: steps right but final answer has a transcription error.</em></div>
+          </div>
+        </div>
+        <div class="score-row">
+          <label>Score for Q1</label>
+          <input type="number" class="score-inp" id="sc-b1" min="0" max="5" value="0" oninput="recalcTotals()">
+          <span class="score-max">/ 5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="g-card-head"><span>Q2 — Algorithm trace</span><span>5 pts</span></div>
+      <div class="g-card-body">
+        <div class="g-row">
+          <div class="g-field"><label>Student — Part a (explanation)</label><div class="g-val" id="g-b2a"></div></div>
+          <div class="g-field"><label>Model answer — Part a (3 pts)</label>
+            <div class="model">This algorithm asks the user for 3 numbers and adds each one to a running score — but only if the number is greater than 4. After all 3 rounds, it prints one of three messages based on whether the score is above 20, above 10, or 10 or below.<br><br><em>3 pts: covers loop-with-condition, accumulation rule (&gt;4), and 3-tier final message. 2 pts: missing one element. 1 pt: partial understanding.</em></div>
+          </div>
+        </div>
+        <div class="g-row">
+          <div class="g-field"><label>Student — Part b (trace)</label><div class="g-val" id="g-b2b"></div></div>
+          <div class="g-field"><label>Model answer — Part b (2 pts)</label>
+            <div class="model">
+              score = 0, round = 0<br>
+              Round 1: answer = 6 &gt; 4 → score = <strong>6</strong><br>
+              Round 2: answer = 2 &gt; 4? No → score = <strong>6</strong><br>
+              Round 3: answer = 9 &gt; 4 → score = <strong>15</strong><br>
+              score = 15 &gt; 20? No. &gt; 10? Yes →<br>
+              Prints: <strong>"Good effort. Total: 15"</strong><br><br>
+              <em>2 pts: correct trace and correct output. 1 pt: right method but arithmetic error or wrong branch selected.</em>
+            </div>
+          </div>
+        </div>
+        <div class="score-row">
+          <label>Score for Q2</label>
+          <input type="number" class="score-inp" id="sc-b2" min="0" max="5" value="0" oninput="recalcTotals()">
+          <span class="score-max">/ 5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g-sec">
+    <div class="g-sec-head">Section C — Scratch Game <span class="g-sec-pts">Manual · <strong id="g-c-pts">0</strong> / 30 pts</span></div>
+    <div class="g-card">
+      <div class="g-card-head"><span>Star Catcher Game</span><span>Play the student's Scratch game to grade</span></div>
+      <div class="g-card-body">
+        <table class="rubric-tbl">
+          <thead><tr><th>Category</th><th>Max</th><th>What to look for</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Correct algorithm</strong></td><td>10 pts</td>
+              <td>Catcher moves left/right with arrow key events (+15 / −15 x). Star uses a forever loop with a y−8 fall step. Touching Catcher is detected and score increments. y &lt; −160 is detected and misses increments. When misses = 3 the game stops with stop all.</td>
+            </tr>
+            <tr>
+              <td><strong>Working game</strong></td><td>10 pts</td>
+              <td>Catcher responds to arrow keys. Star falls and resets after being caught or after hitting the floor. Score increases each catch. Game ends after exactly 3 misses — not before, not never. No freezing or sprites stuck off screen.</td>
+            </tr>
+            <tr>
+              <td><strong>Precision</strong></td><td>5 pts</td>
+              <td>score and misses both visible on stage. Game-over message uses join to show score (e.g. "Game Over! Score: 7"). Star resets to a random x position (not always center) at y: 170. stop all used (not just stop this script).</td>
+            </tr>
+            <tr>
+              <td><strong>Creativity &amp; efficiency</strong><br><em style="font-size:11px;color:var(--text3)">(tiebreaker)</em></td><td>5 pts</td>
+              <td>Sound plays when star is caught. Backdrop added to stage. Costume changes on catch or miss. Bonus: star falls faster after each catch or as score increases.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="score-grid">
+          <div>
+            <div class="score-row"><label>Algorithm</label><input type="number" class="score-inp" id="sc-ca" min="0" max="10" value="0" oninput="recalcTotals()"><span class="score-max">/ 10</span></div>
+            <div class="score-row"><label>Working game</label><input type="number" class="score-inp" id="sc-cw" min="0" max="10" value="0" oninput="recalcTotals()"><span class="score-max">/ 10</span></div>
+          </div>
+          <div>
+            <div class="score-row"><label>Precision</label><input type="number" class="score-inp" id="sc-cp" min="0" max="5" value="0" oninput="recalcTotals()"><span class="score-max">/ 5</span></div>
+            <div class="score-row"><label>Creativity &amp; efficiency</label><input type="number" class="score-inp" id="sc-cc" min="0" max="5" value="0" oninput="recalcTotals()"><span class="score-max">/ 5</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <div>
+      <div class="total-lbl">Final Score</div>
+      <div class="total-breakdown" id="total-breakdown">A: 0 &nbsp;·&nbsp; B: 0 &nbsp;·&nbsp; C: 0</div>
+    </div>
+    <div class="total-score" id="total-score">0 / 54</div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══════════════════════════════════════════════════ -->
+<div class="overlay" id="modal" style="display:none" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Coach Access</h3>
+    <p>Enter the grading password to view model answers and record scores.</p>
+    <div class="modal-err" id="modal-err"></div>
+    <input class="pw-input" type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="checkPw()">Unlock Grading</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CORRECT = {1:'a',2:'c',3:'c',4:'b',5:'c',6:'c',7:'d'};
+const Q_INFO = {
+  1:{q:'Binary 0101 + 0011 = ?',                                          opts:{a:'1000',b:'1010',c:'0111',d:'1100'}},
+  2:{q:'set x=1; repeat until x>15: change x by 4. Final x?',             opts:{a:'13',b:'15',c:'17',d:'16'}},
+  3:{q:'What does "debugging" mean?',                                      opts:{a:'Speeding up a slow program',b:'Adding more features to code',c:'Finding and fixing errors in a program',d:'Deleting old unused files'}},
+  4:{q:'What does the Scratch join block do?',                             opts:{a:'Connects two sprites on the stage',b:'Combines two pieces of text or values into a single message',c:'Starts a loop inside another loop',d:'Sends a broadcast message to another sprite'}},
+  5:{q:'What is a nested loop?',                                           opts:{a:'A loop that runs backwards',b:'A loop that only runs once',c:'A loop placed inside another loop',d:'A loop that checks its condition at the start'}},
+  6:{q:'What happens with an infinite loop?',                              opts:{a:'The loop runs exactly once',b:'The loop runs a set number of times',c:'The loop never stops running',d:'The loop runs backwards'}},
+  7:{q:'score=0; repeat 6 times: change score by 3. Final score?',        opts:{a:'3',b:'9',c:'15',d:'18'}}
+};
+const PASSWORD = 'icompute2026';
+const STORE_KEY = 'weso_test_g5c';
+const NUM_Q = 7;
+
+let chosen = {};
+let timerRef = null;
+let secsLeft = 55 * 60;
+let startTimestamp = null;
+
+function saveState() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      name: document.getElementById('hdr-name').textContent || '',
+      startTimestamp, chosen,
+      b1a: document.getElementById('b1a')?.value || '',
+      b1b: document.getElementById('b1b')?.value || '',
+      b2a: document.getElementById('b2a')?.value || '',
+      b2b: document.getElementById('b2b')?.value || '',
+      scratchDone: document.getElementById('scratch-done')?.checked || false
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (!s.startTimestamp) return;
+    document.getElementById('student-name').value = s.name || '';
+    document.getElementById('saved-name-display').textContent = s.name || 'Student';
+    document.getElementById('resume-notice').style.display = 'block';
+    document.getElementById('begin-btn').style.display = 'none';
+    window._savedState = s;
+  } catch(e) {}
+}
+
+function resumeTest() {
+  const s = window._savedState;
+  if (!s) return;
+  const elapsed = Math.floor((Date.now() - s.startTimestamp) / 1000);
+  secsLeft = Math.max(0, 55 * 60 - elapsed);
+  startTimestamp = s.startTimestamp;
+  chosen = s.chosen || {};
+  document.getElementById('hdr-name').textContent = s.name || 'Student';
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('test-header').style.display  = 'flex';
+  document.getElementById('test-body').style.display    = 'block';
+  for (const [n, letter] of Object.entries(chosen)) {
+    const card = document.getElementById('qa-' + n);
+    if (!card) continue;
+    const idx = {a:0,b:1,c:2,d:3}[letter];
+    if (idx !== undefined) card.querySelectorAll('.opt')[idx]?.classList.add('sel');
+  }
+  document.getElementById('b1a').value = s.b1a || '';
+  document.getElementById('b1b').value = s.b1b || '';
+  document.getElementById('b2a').value = s.b2a || '';
+  document.getElementById('b2b').value = s.b2b || '';
+  if (s.scratchDone) { document.getElementById('scratch-done').checked = true; confirmScratch(); }
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = Math.floor(secsLeft/60) + ':' + String(secsLeft%60).padStart(2,'0');
+  if (secsLeft <= 300) timerEl.className = 'urgent';
+  else if (secsLeft <= 900) timerEl.className = 'warn';
+  startTimer();
+  window.scrollTo(0,0);
+}
+
+function startFresh() {
+  if (!confirm('Clear saved progress and start a new test?')) return;
+  localStorage.removeItem(STORE_KEY); location.reload();
+}
+function clearAndReset() {
+  if (!confirm('Reset this test? All answers will be cleared.')) return;
+  localStorage.removeItem(STORE_KEY); location.reload();
+}
+
+function startTimer() {
+  timerRef = setInterval(() => {
+    secsLeft--;
+    const el = document.getElementById('timer');
+    el.textContent = Math.floor(secsLeft/60) + ':' + String(secsLeft%60).padStart(2,'0');
+    if      (secsLeft <= 0)   { clearInterval(timerRef); el.className = 'urgent'; }
+    else if (secsLeft <= 300) { el.className = 'urgent'; }
+    else if (secsLeft <= 900) { el.className = 'warn'; }
+  }, 1000);
+}
+
+function startTest() {
+  const name = document.getElementById('student-name').value.trim() || 'Student';
+  document.getElementById('hdr-name').textContent = name;
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('test-header').style.display  = 'flex';
+  document.getElementById('test-body').style.display    = 'block';
+  startTimestamp = Date.now();
+  startTimer(); saveState(); window.scrollTo(0,0);
+}
+
+function pick(n, letter) {
+  chosen[n] = letter;
+  const card = document.getElementById('qa-' + n);
+  card.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
+  card.querySelectorAll('.opt')[{a:0,b:1,c:2,d:3}[letter]].classList.add('sel');
+  saveState();
+}
+
+function confirmScratch() {
+  const done = document.getElementById('scratch-done').checked;
+  document.getElementById('scratch-lbl').classList.toggle('checked', done);
+  document.getElementById('scratch-lbl-text').textContent = done
+    ? 'Game saved in Scratch — ready to submit!'
+    : 'I finished my Scratch game and saved it on this computer.';
+  saveState();
+}
+
+function submitTest() {
+  clearInterval(timerRef);
+  localStorage.removeItem(STORE_KEY);
+  const name = document.getElementById('hdr-name').textContent;
+
+  let aScore = 0;
+  const aC = document.getElementById('res-a-cards');
+  aC.innerHTML = '';
+  for (let i = 1; i <= NUM_Q; i++) {
+    const got = chosen[i] || null;
+    const ans = CORRECT[i];
+    const ok  = got === ans;
+    if (ok) aScore += 2;
+    const info = Q_INFO[i];
+    const div = document.createElement('div');
+    div.className = 'r-card';
+    div.innerHTML = `
+      <div class="r-card-head"><span>Q${i}: ${info.q}</span><span></span></div>
+      <div class="r-card-body"><strong>Your answer:</strong> ${got ? got.toUpperCase()+'. '+info.opts[got] : '<em style="color:var(--text3)">not answered</em>'}</div>`;
+    aC.appendChild(div);
+  }
+
+  document.getElementById('res-byline').textContent = 'Results for ' + name;
+  document.getElementById('res-b1a').textContent = document.getElementById('b1a').value || '(no answer)';
+  document.getElementById('res-b1b').textContent = document.getElementById('b1b').value || '(no answer)';
+  document.getElementById('res-b2a').textContent = document.getElementById('b2a').value || '(no answer)';
+  document.getElementById('res-b2b').textContent = document.getElementById('b2b').value || '(no answer)';
+
+  const scratched = document.getElementById('scratch-done').checked;
+  document.getElementById('res-c-status').innerHTML = scratched
+    ? '<span class="correct-tag">Saved ✓</span>'
+    : '<span class="wrong-tag">Not confirmed</span>';
+
+  document.getElementById('grade-name').textContent = name;
+  document.getElementById('g-a-pts').textContent = aScore;
+  buildGradeA(aScore);
+
+  document.getElementById('test-header').style.display    = 'none';
+  document.getElementById('test-body').style.display      = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function showResults() {
+  document.getElementById('grading-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function buildGradeA(aScore) {
+  const c = document.getElementById('g-a-cards');
+  c.innerHTML = '';
+  for (let i = 1; i <= NUM_Q; i++) {
+    const got = chosen[i] || null;
+    const ans = CORRECT[i];
+    const ok  = got === ans;
+    const info = Q_INFO[i];
+    const div = document.createElement('div');
+    div.className = 'g-card';
+    div.innerHTML = `
+      <div class="g-card-head"><span>Q${i}: ${info.q}</span><span>${ok?'+2':'0'} / 2 pts</span></div>
+      <div class="g-card-body">
+        <div class="g-row">
+          <div class="g-field"><label>Student answer</label>
+            <div class="g-val ${ok?'iscorrect':'iswrong'}">${got ? got.toUpperCase()+'. '+info.opts[got] : '(not answered)'}</div>
+          </div>
+          <div class="g-field"><label>Correct answer</label>
+            <div class="g-val iscorrect">${ans.toUpperCase()}. ${info.opts[ans]}</div>
+          </div>
+        </div>
+      </div>`;
+    c.appendChild(div);
+  }
+}
+
+function recalcTotals() {
+  const aTotal = parseInt(document.getElementById('g-a-pts').textContent) || 0;
+  const b1 = clamp(document.getElementById('sc-b1').value, 5);
+  const b2 = clamp(document.getElementById('sc-b2').value, 5);
+  const ca = clamp(document.getElementById('sc-ca').value, 10);
+  const cw = clamp(document.getElementById('sc-cw').value, 10);
+  const cp = clamp(document.getElementById('sc-cp').value, 5);
+  const cc = clamp(document.getElementById('sc-cc').value, 5);
+  const bTotal = Math.min(b1+b2, 10);
+  const cTotal = Math.min(ca+cw+cp+cc, 30);
+  const grand  = aTotal + bTotal + cTotal;
+  document.getElementById('g-b-pts').textContent = bTotal;
+  document.getElementById('g-c-pts').textContent = cTotal;
+  document.getElementById('total-score').textContent = grand + ' / 54';
+  document.getElementById('total-breakdown').textContent = `A: ${aTotal} \u00b7 B: ${bTotal} \u00b7 C: ${cTotal}`;
+}
+function clamp(val, max) { return Math.min(Math.max(parseInt(val)||0,0), max); }
+
+function openModal() {
+  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('pw').value = '';
+  document.getElementById('modal-err').textContent = '';
+  setTimeout(() => document.getElementById('pw').focus(), 50);
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal'))
+    document.getElementById('modal').style.display = 'none';
+}
+function checkPw() {
+  if (document.getElementById('pw').value === PASSWORD) {
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('g-b1a').textContent = document.getElementById('b1a').value || '(no answer)';
+    document.getElementById('g-b1b').textContent = document.getElementById('b1b').value || '(no answer)';
+    document.getElementById('g-b2a').textContent = document.getElementById('b2a').value || '(no answer)';
+    document.getElementById('g-b2b').textContent = document.getElementById('b2b').value || '(no answer)';
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('grading-screen').style.display = 'block';
+    recalcTotals(); window.scrollTo(0,0);
+  } else {
+    document.getElementById('modal-err').textContent = 'Incorrect password. Try again.';
+    document.getElementById('pw').value = '';
+    document.getElementById('pw').focus();
+  }
+}
+
+['b1a','b1b','b2a','b2b'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', saveState);
+});
+loadState();
+</script>
+</body>
+</html>
