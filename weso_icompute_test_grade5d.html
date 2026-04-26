@@ -408,11 +408,12 @@ Print "Your bonus points: " + bonus</div>
         </div>
         <div class="step">
           <div class="step-n">3</div>
-          <div class="step-t">After the loop, use <strong>if / else</strong> to check whether there were more than 2 hot days:
+          <div class="step-t">After the loop, use <strong>if / else</strong> to check whether there were more than 2 hot days. In <em>both</em> branches, calculate the average by dividing <strong>total by 5</strong> and include it in the message using join:
             <ul>
-              <li>If hot_days &gt; 2: switch to a <strong>sunny backdrop</strong> and say (join <strong>"Hot week! "</strong> (join hot_days <strong>" days were over 80°F."</strong>)) for 3 seconds</li>
-              <li>Else: switch to a <strong>cloudy backdrop</strong> and say (join <strong>"Mild week. Hot days: "</strong> hot_days) for 3 seconds</li>
+              <li>If hot_days &gt; 2: switch to a <strong>sunny backdrop</strong> and say (join <strong>"Hot week! Avg: "</strong> (join <strong>(total / 5)</strong> <strong>"°F."</strong>)) for 3 seconds</li>
+              <li>Else: switch to a <strong>cloudy backdrop</strong> and say (join <strong>"Mild week. Avg: "</strong> (join <strong>(total / 5)</strong> <strong>"°F."</strong>)) for 3 seconds</li>
             </ul>
+            <em style="font-size:12px;color:var(--text3)">Hint: use the division operator block (÷) in Scratch to calculate total / 5 inside the join.</em>
           </div>
         </div>
         <div class="step">
@@ -422,9 +423,9 @@ Print "Your bonus points: " + bonus</div>
 
         <div class="rubric-mini">
           <div class="rubric-mini-head">Scoring rubric — 30 pts total</div>
-          <div class="rubric-row-mini"><span>Correct algorithm (4 variables; repeat 5 loop; total accumulates; hot_days increments when temp &gt; 80; if/else on hot_days &gt; 2; both output branches correct)</span><span class="rpts">10 pts</span></div>
-          <div class="rubric-row-mini"><span>Working program (test with 3+ temps &gt;80 → hot week message; test with ≤2 hot days → mild week; day increments correctly; no crashing)</span><span class="rpts">10 pts</span></div>
-          <div class="rubric-row-mini"><span>Precision (temp &amp; hot_days visible; join used in both output messages; boundary strictly &gt;80 not ≥; messages shown for exactly 3 seconds)</span><span class="rpts">5 pts</span></div>
+          <div class="rubric-row-mini"><span>Correct algorithm (4 variables; repeat 5 loop; total accumulates; hot_days increments when temp &gt; 80; if/else on hot_days &gt; 2; average = total / 5 used in both output messages)</span><span class="rpts">10 pts</span></div>
+          <div class="rubric-row-mini"><span>Working program (test with 3+ temps &gt;80 → "Hot week! Avg: X°F."; test with ≤2 hot days → "Mild week. Avg: X°F."; day and total update correctly; no crashing)</span><span class="rpts">10 pts</span></div>
+          <div class="rubric-row-mini"><span>Precision (temp &amp; hot_days visible; join embeds (total / 5) correctly in both messages; boundary strictly &gt;80 not ≥; messages shown for exactly 3 seconds)</span><span class="rpts">5 pts</span></div>
           <div class="rubric-row-mini"><span>Creativity &amp; efficiency — tiebreaker (sound at start; backdrop change for hot vs. mild; costume change; clean code)</span><span class="rpts">5 pts</span></div>
         </div>
 
@@ -588,15 +589,15 @@ Print "Your bonus points: " + bonus</div>
           <tbody>
             <tr>
               <td><strong>Correct algorithm</strong></td><td>10 pts</td>
-              <td>Four variables: day, temp, total, hot_days. repeat 5 loop present. day increments each iteration. total accumulates (change total by temp). If temp &gt; 80: change hot_days by 1. if/else on hot_days &gt; 2 routes to correct output. Both branches present.</td>
+              <td>Four variables: day, temp, total, hot_days. repeat 5 loop present. day increments each iteration. total accumulates (change total by temp). If temp &gt; 80: change hot_days by 1. if/else on hot_days &gt; 2. Both branches compute average as (total / 5) and embed it in the say message.</td>
             </tr>
             <tr>
               <td><strong>Working program</strong></td><td>10 pts</td>
-              <td>Test with entries 85, 90, 70, 82, 60 → hot_days = 3 → "Hot week! 3 days were over 80°F." Test with entries 70, 65, 80, 75, 72 → hot_days = 0 → "Mild week. Hot days: 0." No crashing. day variable updates correctly each round.</td>
+              <td>Test with 85, 90, 70, 82, 60 → total=387, hot_days=3 → "Hot week! Avg: 77.4°F." Test with 70, 65, 80, 75, 72 → total=362, hot_days=0 → "Mild week. Avg: 72.4°F." day and total update correctly each round. No crashing.</td>
             </tr>
             <tr>
               <td><strong>Precision</strong></td><td>5 pts</td>
-              <td>temp and hot_days visible on stage. join used correctly in both say messages. Boundary strictly &gt; 80 (not ≥ 80). Each say block runs for exactly 3 seconds.</td>
+              <td>temp and hot_days visible on stage. join used to embed (total / 5) in both say messages. Boundary strictly &gt; 80 (not ≥ 80). Each say block runs for exactly 3 seconds.</td>
             </tr>
             <tr>
               <td><strong>Creativity &amp; efficiency</strong><br><em style="font-size:11px;color:var(--text3)">(tiebreaker)</em></td><td>5 pts</td>
