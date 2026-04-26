@@ -385,53 +385,46 @@ If rain = "yes" then:
 
     <div class="task-card">
       <div class="task-head">
-        <div class="task-head-title">Programming Task — Savings Goal Tracker</div>
+        <div class="task-head-title">Programming Task — Balloon Pop Game</div>
         <span style="font-size:12px;color:var(--text3)">Scratch 3.29 offline</span>
       </div>
       <div class="task-body">
-        <p class="task-intro">Create a piggy-bank sprite that helps someone track their savings goal. The sprite asks how much they have saved and what their goal is, then calculates whether they've reached it — and how much more they still need. Your program must do <em>all</em> of the following:</p>
+        <p class="task-intro">Build a balloon-popping game! The player clicks the balloon to pop it — each click moves it to a new random spot and adds to the score. Pop <strong>5 balloons</strong> to win. Your program must use <strong>two separate scripts</strong> on the balloon sprite and do <em>all</em> of the following:</p>
 
         <div class="step">
           <div class="step-n">1</div>
-          <div class="step-t">When the green flag is clicked, create three variables: <strong>saved</strong>, <strong>goal</strong>, and <strong>needed</strong>. Make <strong>saved</strong> and <strong>goal</strong> visible on the stage.</div>
+          <div class="step-t"><strong>Green flag script:</strong> Create one variable called <strong>score</strong> and set it to <strong>0</strong>. Make score <strong>visible</strong> on the stage. Switch to a <strong>sky backdrop</strong>. Move the balloon to a random starting position: x: <strong>pick random −180 to 180</strong>, y: <strong>pick random −100 to 100</strong>.</div>
         </div>
         <div class="step">
           <div class="step-n">2</div>
-          <div class="step-t">Ask <strong>"How much money have you saved?"</strong> and set <strong>saved</strong> to the answer. Then ask <strong>"What is your savings goal?"</strong> and set <strong>goal</strong> to the answer.</div>
+          <div class="step-t"><strong>"When this sprite clicked" script</strong> (a brand new script, separate from the green flag one). Each time the balloon is clicked:
+            <ul>
+              <li>Change <strong>score</strong> by 1</li>
+              <li>Play a <strong>pop sound</strong></li>
+              <li>Switch to the <strong>next costume</strong> (so the balloon changes colour)</li>
+              <li>Go to x: <strong>pick random −180 to 180</strong>, y: <strong>pick random −100 to 100</strong></li>
+            </ul>
+          </div>
         </div>
         <div class="step">
           <div class="step-n">3</div>
-          <div class="step-t">Set <strong>needed</strong> using subtraction:
+          <div class="step-t">Still inside the <strong>"when this sprite clicked"</strong> script, after moving, add an <strong>if</strong> block to check whether the player has won:
             <ul>
-              <li><strong>needed = goal − saved</strong></li>
+              <li>If score = 5: switch the backdrop to a <strong>celebration scene</strong>, say (join <strong>"You popped "</strong> (join score <strong>" balloons! You win!"</strong>)) for 3 seconds, then <strong>stop all</strong></li>
             </ul>
           </div>
         </div>
         <div class="step">
           <div class="step-n">4</div>
-          <div class="step-t">Use <strong>if / else</strong> to check whether the goal has been reached:
-            <ul>
-              <li>If saved ≥ goal: say <strong>"Goal reached! You saved [saved] coins!"</strong> for 3 seconds</li>
-              <li>Else: say <strong>"Keep saving! You need [needed] more coins."</strong> for 3 seconds</li>
-            </ul>
-            Use the <strong>join</strong> block to include the value of saved (or needed) inside each message.
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-n">5</div>
-          <div class="step-t"><strong>Switch the backdrop</strong> to match the result — a celebration scene when the goal is reached, a different scene when not yet there.</div>
-        </div>
-        <div class="step">
-          <div class="step-n">6</div>
-          <div class="step-t">Add a <strong>sound</strong> that plays in each branch (you can use different sounds for success and not-yet).</div>
+          <div class="step-t">Give the balloon sprite <strong>at least 2 costumes</strong> (e.g. different colours) so it visibly changes each time it is popped and moves.</div>
         </div>
 
         <div class="rubric-mini">
           <div class="rubric-mini-head">Scoring rubric — 30 pts total</div>
-          <div class="rubric-row-mini"><span>Correct algorithm (3 variables created; needed = goal − saved; if/else checks saved ≥ goal; correct message in both branches)</span><span class="rpts">10 pts</span></div>
-          <div class="rubric-row-mini"><span>Working program (saved=15 goal=10 → "Goal reached!"; saved=5 goal=20 → needed=15 → "Keep saving!")</span><span class="rpts">10 pts</span></div>
-          <div class="rubric-row-mini"><span>Precision (join embeds variable in both messages; needed uses subtraction; boundary uses ≥ not &gt;; each message for 3 seconds)</span><span class="rpts">5 pts</span></div>
-          <div class="rubric-row-mini"><span>Creativity &amp; efficiency — tiebreaker (sounds in both branches; backdrop change; costume change; saved &amp; goal visible on stage)</span><span class="rpts">5 pts</span></div>
+          <div class="rubric-row-mini"><span>Correct algorithm (score variable created and set to 0; "when clicked" script increments score; pick random for x and y position; if score = 5 triggers win; join embeds score in win message; stop all ends game)</span><span class="rpts">10 pts</span></div>
+          <div class="rubric-row-mini"><span>Working program (clicking balloon increases score by 1; balloon jumps to a new random spot each click; after exactly 5 clicks the win message appears and game stops; sound plays on each pop)</span><span class="rpts">10 pts</span></div>
+          <div class="rubric-row-mini"><span>Precision (score visible on stage; pick random used for both x and y; join block correctly builds win message; stop all present; balloon moves on every single click)</span><span class="rpts">5 pts</span></div>
+          <div class="rubric-row-mini"><span>Creativity &amp; efficiency — tiebreaker (at least 2 balloon costumes that cycle; backdrop changes at win; pop sound plays; sky backdrop on start is different from win backdrop)</span><span class="rpts">5 pts</span></div>
         </div>
 
         <label class="scratch-confirm" id="scratch-lbl">
@@ -485,7 +478,7 @@ If rain = "yes" then:
     <h3>Section C — Scratch Program</h3>
     <div class="r-card">
       <div class="r-card-head">
-        <span>Savings Goal Tracker</span>
+        <span>Balloon Pop Game</span>
         <span id="res-c-status"></span>
       </div>
       <div class="r-card-body">Coach will run the Scratch project and grade it using the rubric in the grading panel.</div>
@@ -581,26 +574,26 @@ If rain = "yes" then:
   <div class="g-sec">
     <div class="g-sec-head">Section C — Scratch Program <span class="g-sec-pts">Manual · <strong id="g-c-pts">0</strong> / 30 pts</span></div>
     <div class="g-card">
-      <div class="g-card-head"><span>Savings Goal Tracker</span><span>Run the student's Scratch file to grade</span></div>
+      <div class="g-card-head"><span>Balloon Pop Game</span><span>Run the student's Scratch file to grade</span></div>
       <div class="g-card-body">
         <table class="rubric-tbl">
           <thead><tr><th>Category</th><th>Max</th><th>What to look for</th></tr></thead>
           <tbody>
             <tr>
               <td><strong>Correct algorithm</strong></td><td>10 pts</td>
-              <td>Three variables: saved, goal, needed. needed set to (goal − saved). if/else checks saved ≥ goal. Both branches present with correct message logic. No steps skipped.</td>
+              <td>score variable created and set to 0 on green flag. Separate "when this sprite clicked" script present. score increments by 1 on each click. pick random used for x and y. if score = 5: backdrop switches, win message with join, stop all. Two scripts total on the balloon.</td>
             </tr>
             <tr>
               <td><strong>Working program</strong></td><td>10 pts</td>
-              <td>Test with saved=15, goal=10 → "Goal reached! You saved 15 coins!" Test with saved=5, goal=20 → needed=15 → "Keep saving! You need 15 more coins." Ask/wait prompts work correctly. No crashing.</td>
+              <td>Click the balloon 4 times — score shows 4, balloon moves each time, no win yet. Click a 5th time — score = 5, win message appears ("You popped 5 balloons! You win!"), game stops. Sound plays on each click. Balloon visibly moves to a new random spot every click.</td>
             </tr>
             <tr>
               <td><strong>Precision</strong></td><td>5 pts</td>
-              <td>join block used to embed variable in both say messages. needed calculated with subtraction (goal − saved). Boundary correctly uses ≥ (not strictly &gt;). Each message shown for 3 seconds.</td>
+              <td>score visible on stage throughout. pick random used for both x AND y (not just one axis). join used correctly to build the win message. stop all present and fires at score = 5 (not 4 or 6). Balloon moves on every click, including the 5th.</td>
             </tr>
             <tr>
               <td><strong>Creativity &amp; efficiency</strong><br><em style="font-size:11px;color:var(--text3)">(tiebreaker)</em></td><td>5 pts</td>
-              <td>Sound plays in at least one branch. Backdrop changes for success vs. not-yet. Costume change on sprite. saved and goal visible on stage.</td>
+              <td>At least 2 balloon costumes that visibly cycle on each pop. Sky backdrop on start is different from the win celebration backdrop. Pop sound plays on each click. Code is clean with no extra unused blocks.</td>
             </tr>
           </tbody>
         </table>
